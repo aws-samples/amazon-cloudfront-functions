@@ -2,7 +2,7 @@
 
 **CloudFront Functions event type: viewer response**
 
-This function adds an [Access-Control-Allow-Origin](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Origin) response header if it is not present in the outgoing response from CloudFront. The `Access-Control-Allow-Origin` header is part of [Cross-Origin Resource Sharing](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) (CORS), a mechanism using HTTP headers to tell browsers to give a web application running at one origin access to selected resources from a different origin. The `Access-Control-Allow-Origin` response header indicates whether the response can be shared with requesting code from the given origin. In this example, we are setting the value to "*", which instructs browsers to allow requesting code from any origin to access the resource.
+This function adds an [Access-Control-Allow-Origin](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Origin) response header if it is not present in the outgoing response from CloudFront. The `Access-Control-Allow-Origin` header is part of [Cross-Origin Resource Sharing](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) (CORS), a mechanism using HTTP headers to tell browsers to give a web application running at one origin access to selected resources from a different origin. The `Access-Control-Allow-Origin` response header indicates whether the response can be shared with requesting code from the given origin. In this example, we are setting the value to the [Origin](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Origin) request header, if the origin header is present.
 
 ***Important: Set the value of the Access-Control-Allow-Origin header to an appropriate value for your specific needs.**
 
@@ -39,7 +39,7 @@ If the function has been set up correctly, you should see a result similar to th
             "Access-Control-Allow-Origin was missing, adding it now."
         ],
         "FunctionErrorMessage": "",
-        "FunctionOutput": "{\"response\":{\"headers\":{\"access-control-allow-origin\":{\"value\":\"*\"},\"server\":{\"value\":\"CustomOriginServer\"},\"content-length\":{\"value\":\"9593\"},\"content-type\":{\"value\":\"text/html; charset=UTF-8\"}},\"statusDescription\":\"OK\",\"cookies\":{\"loggedIn\":{\"attributes\":\"Secure; Path=/; Domain=example.com; Expires=Wed, 05 Jan 2024 07:28:00 GMT\",\"value\":\"true\"},\"id\":{\"attributes\":\"Expires=Wed, 05 Jan 2024 07:28:00 GMT\",\"value\":\"a3fWa\"}},\"statusCode\":200}}"
+        "FunctionOutput": "{\"response\":{\"headers\":{\"access-control-allow-origin\":{\"value\":\"https:\/\/www.example.com\"},\"server\":{\"value\":\"CustomOriginServer\"},\"content-length\":{\"value\":\"9593\"},\"content-type\":{\"value\":\"text/html; charset=UTF-8\"}},\"statusDescription\":\"OK\",\"cookies\":{\"loggedIn\":{\"attributes\":\"Secure; Path=/; Domain=example.com; Expires=Wed, 05 Jan 2024 07:28:00 GMT\",\"value\":\"true\"},\"id\":{\"attributes\":\"Expires=Wed, 05 Jan 2024 07:28:00 GMT\",\"value\":\"a3fWa\"}},\"statusCode\":200}}"
     }
 }
 ```
