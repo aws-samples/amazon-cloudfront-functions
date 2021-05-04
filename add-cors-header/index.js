@@ -1,11 +1,13 @@
-function handler(event) {
+function handler(event)  {
     var request = event.request;
-    var headers = request.headers;
-    var host = request.headers.host.value;
-   
-   // If origin header is missing, set it equal to the host header.
-   if (!headers.origin)
-       headers.origin = {value:`https://${host}`};
-       
-   return request;
+    var response  = event.response;
+ 
+    // If Access-Control-Allow-Origin CORS header is missing, add it.
+    // Since JavaScript doesn't allow for hyphens in variable names, we use the dict["key"] notation.
+    if (!response.headers['access-control-allow-origin'] && request.headers['origin']) {
+        headers['access-control-allow-origin'] = {value: request.headers['origin'].value};
+        console.log("Access-Control-Allow-Origin was missing, adding it now.");
+    }
+
+    return response;
 }

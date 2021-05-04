@@ -15,7 +15,8 @@
         },
         "headers": {
             "host": { "value": "www.example.com" },
-            "accept": { "value": "text/html", "multivalue": [ { "value": "text/html" }, { "value": "application/xhtml+xml" } ] }
+            "accept": { "value": "text/html", "multivalue": [ { "value": "text/html" }, { "value": "application/xhtml+xml" } ] },
+            "origin": { "value": "https://www.example.com"}
         },
         "cookies": {
             "id": { "value": "CookeIdValue" },
