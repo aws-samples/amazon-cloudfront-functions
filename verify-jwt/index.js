@@ -86,7 +86,7 @@ function _base64urlDecode(str) {
 function handler(event) {
     var request = event.request;
 
-    //Secret ket used to verify JWT token.
+    //Secret key used to verify JWT token.
     //Update with your own key.
     var key = "LzdWGpAToQ1DqYuzHxE6YOqi7G3X2yvNBot9mCXfx5k";
 
