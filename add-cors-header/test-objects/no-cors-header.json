@@ -1,0 +1,38 @@
+{
+    "version": "1.0",
+    "context": {
+        "eventType": "viewer-response"
+    },
+    "viewer": {
+        "ip": "0.0.0.0"
+    },
+    "request": {
+        "method": "GET",
+        "uri": "/index.html",
+        "querystring": {
+            "test": { "value": "true" },
+            "arg": { "value": "val1", "multivalue": [ { "value": "val1" }, { "value": "val2" } ] }
+        },
+        "headers": {
+            "host": { "value": "www.example.com" },
+            "accept": { "value": "text/html", "multivalue": [ { "value": "text/html" }, { "value": "application/xhtml+xml" } ] }
+        },
+        "cookies": {
+            "id": { "value": "CookeIdValue" },
+            "loggedIn": { "value": "false" }
+        }
+    },
+    "response": {
+        "statusCode": 200,
+        "statusDescription": "OK",
+        "headers": {
+            "server": { "value": "CustomOriginServer" },
+            "content-type": {"value": "text/html; charset=UTF-8"},
+            "content-length": {"value": "9593" }
+        },
+        "cookies": {
+            "id": { "value": "a3fWa", "multivalue": [ { "value": "a3fWa" }, { "value": "a3fWb" } ], "attributes": "Expires=Wed, 05 Jan 2024 07:28:00 GMT" },
+            "loggedIn": { "value": "true", "attributes": "Secure; Path=/; Domain=example.com; Expires=Wed, 05 Jan 2024 07:28:00 GMT" }
+        }
+    }
+}

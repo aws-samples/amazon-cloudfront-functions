@@ -1,0 +1,21 @@
+{
+    "version": "1.0",
+    "context": {
+        "eventType": "viewer-request"
+    },
+    "viewer": {
+        "ip": "0.0.0.0"
+    },
+    "request": {
+        "method": "GET",
+        "uri": "/index.html",
+        "querystring": {
+            "jwt": { "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJuYmYiOjE1MTYyMzkwMjIsImV4cCI6MTcxNjIzOTAyMn0.jyu6HjS95wU8iSofQ8nBlmPjFYODxn4PQAdFM-Cv8JY"},
+            "test": {"value": "anotherQueryString"}
+        },
+        "headers": {
+            "host": { "value": "www.example.com" },
+            "accept": { "value": "text/html", "multivalue": [ { "value": "text/html" }, { "value": "application/xhtml+xml" } ] }
+        }
+    }
+}
