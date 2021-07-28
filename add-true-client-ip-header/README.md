@@ -8,7 +8,7 @@
 
 **Note:**
 - You only need this header if your origin includes logic based on the client's IP address. If your origin returns the same content regardless of the client IP address, this function is likely not needed.
-- You don't have to use the header name `True-Client-IP`. You can change the name to any value that your origin requires (e.g. `X-Real-IP`).
+- You don't have to use the header name `True-Client-IP`. You can change the name to any value that your origin requires (e.g. `X-Real-Client-IP`).
 - CloudFront also sends an `X-Forwarded-For` header to your origin, which contains the client's IP address along with any HTTP proxies or load balancers that the request passed through.
 
 **Testing the function**
