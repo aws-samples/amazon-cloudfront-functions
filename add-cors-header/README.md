@@ -13,7 +13,7 @@ If your web site or application doesn't need CORS headers, then this function is
 To validate that the function is working as expected, you can use the JSON test objects in the `test-objects` directory. To test, you can use the `test-function` CLI command that will look something like this:
 
 ```
-$ aws cloudfront test-function --if-match EXXXXXXXXXXXX --name add-cors-headers --event-object fileb://add-cors-headers/test-objects/no-cors-header.json
+$ aws cloudfront test-function --if-match EXXXXXXXXXXXX --name add-cors-header --event-object fileb://add-cors-header/test-objects/no-cors-header.json
 ```
 
 If the function has been set up correctly, you should see a result similar to the following with the `access-control-allow-origin` header being added in the `FunctionOutput` JSON object:
@@ -28,7 +28,7 @@ If the function has been set up correctly, you should see a result similar to th
                 "Runtime": "cloudfront-js-1.0"
             },
             "FunctionMetadata": {
-                "FunctionARN": "arn:aws:cloudfront::1234567890:function/add-cors-headers",
+                "FunctionARN": "arn:aws:cloudfront::1234567890:function/add-cors-header",
                 "Stage": "DEVELOPMENT",
                 "CreatedTime": "2021-04-08T23:37:50.825000+00:00",
                 "LastModifiedTime": "2021-04-08T23:37:51.096000+00:00"
