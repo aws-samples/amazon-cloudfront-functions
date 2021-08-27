@@ -50,7 +50,7 @@ cd amazon-cloudfront-functions/
 aws cloudfront create-function \
 --name add-cache-control-headers \
 --function-config Comment="Function to add cache-control headers",Runtime=cloudfront-js-1.0 \
---function-code fileb://add-cache-control-headers/index.js
+--function-code fileb://add-cache-control-header/index.js
 
 {
     "Location": "https://cloudfront.amazonaws.com/2020-05-31/function/arn:aws:cloudfront::XXXXXXXXXXXX:function/add-cache-control-headers",
@@ -83,7 +83,7 @@ Test the function using the provided test event by running the following command
 aws cloudfront test-function \
 --name add-cache-control-headers \ 
 --if-match EXXXXXXXXX \
---event-object fileb://add-cache-control-headers/test-event.json
+--event-object fileb://add-cache-control-header/test-event.json
 
 {
     "TestResult": {

@@ -13,7 +13,7 @@ If your origin sends a `Cache-Control` header in responses to CloudFront, this h
 To validate that the function is working as expected, you can use the provided `test-event.json` test object. To test, you can use the `test-function` CLI command that will look something like this:
 
 ```
-$ aws cloudfront test-function --if-match EXXXXXXXXXXXX --name add-cache-control-headers --event-object fileb://add-cache-control-headers/test-event.json
+$ aws cloudfront test-function --if-match EXXXXXXXXXXXX --name add-cache-control-headers --event-object fileb://add-cache-control-header/test-event.json
 ```
 
 If the function has been set up correctly, you should see a result similar to the following with the `cache-control` header being added in the `FunctionOutput` JSON object:
