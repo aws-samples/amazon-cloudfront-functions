@@ -1,5 +1,7 @@
 ## Add HTTP security headers
 
+> :warning: Consider using [CloudFront Response Headers Policies](https://aws.amazon.com/blogs/networking-and-content-delivery/amazon-cloudfront-introduces-response-headers-policies/) instead of CloudFront Functions to configure CORS, security, and custom HTTP response headers.
+
 **CloudFront Functions event type: viewer response**
 
 This function adds several common HTTP security headers to the response from CloudFront. The following headers are added as part of this function:
