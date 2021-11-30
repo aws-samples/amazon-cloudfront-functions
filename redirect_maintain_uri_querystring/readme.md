@@ -10,7 +10,7 @@ If you want a permanent redirect,  change statusCode from 302 to 301 in function
 
 **Testing the function**
 
-To validate that the function is working as expected, you can use the provided test object from https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/functions-event-structure.html#functions-event-structure-example and test in the console using the instructions https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/test-function.html#test-function-console
+To validate that the function is working as expected, you can use the provided test object from https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/functions-event-structure.html#functions-event-structure-example and test in the console using the instructions https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/test-function.html#test-function-console.
 
 If the function has been set up correctly, you should see a result similar to the following with the value of 'newdomain',  and the uri and querystring values from the test object being added in the 'location' response header in `FunctionOutput` JSON object:
 ```
