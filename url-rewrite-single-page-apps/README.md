@@ -15,7 +15,7 @@ There is a feature in CloudFront called the [default root object](https://docs.a
 aws cloudfront create-function --name url-rewrite-single-page-apps --function-config Comment="Function to redirect empty doc requests to index.html",Runtime=cloudfront-js-1.0 --function-code fileb://url-rewrite-single-page-apps/index.js
 ```
 
-If the fuction was created correctly, the JSON output should look similar to this:
+If the function was created correctly, the JSON output should look similar to this:
 
 ```
 {
@@ -72,7 +72,7 @@ If the function has been set up correctly, you should see the `uri` being update
 }
 ```
 
-### Publish the fuction.
+### Publish the function.
 Please note that the JSON response states `"Status" : "UNPUBLISHED"`, so the next step is to publish the function.
 ```
 aws cloudfront publish-function --name url-rewrite-single-page-apps --if-match <ETag>
