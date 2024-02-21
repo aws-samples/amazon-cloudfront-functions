@@ -80,7 +80,10 @@ function _sign(input, key, method) {
 }
 
 function _base64urlDecode(str) {
-    return String.bytesFrom(str, 'base64url')
+    return Buffer.from(str, 'base64url')
+    
+    // For Old Node Version
+// return String.bytesFrom(str, 'base64url')
 }
 
 function handler(event) {
