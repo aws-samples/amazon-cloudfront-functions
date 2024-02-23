@@ -80,7 +80,8 @@ function _sign(input, key, method) {
 }
 
 function _base64urlDecode(str) {
-    return String.bytesFrom(str, 'base64url')
+    return Buffer.from(str, 'base64url')    // for Runtime version cloudfront-js-2.0
+    // return String.bytesFrom(str, 'base64url')    // for Runtime version cloudfront-js-1.0
 }
 
 function handler(event) {
