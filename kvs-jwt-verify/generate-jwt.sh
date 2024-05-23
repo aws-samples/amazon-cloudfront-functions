@@ -4,7 +4,7 @@
 # JWT Encoder Bash Script
 #
 
-secret='7MDB4NFSATYUM2mFLWlokGH4b1NDCuXXO4sxrzRaiLByiWoH2RdNsRthmC0BJJHe'
+secret='REPLACE_WITH_YOUR_KEY'
 
 # initialize time as epoch milliseconds
 time=$(date +%s)
