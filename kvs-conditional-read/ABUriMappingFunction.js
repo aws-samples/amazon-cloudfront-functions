@@ -1,6 +1,6 @@
 import cf from 'cloudfront'; 
 
-// Replace KVS_ID with actual KVS ID
+// (Optional) Replace KVS_ID with actual KVS ID
 const kvsId = "KVS_ID";
 // enable stickiness by setting a cookie from origin or using another edge function
 const stickinessCookieName = "appversion";
