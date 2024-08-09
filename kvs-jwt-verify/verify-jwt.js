@@ -1,8 +1,6 @@
 import crypto from 'crypto';
 import cf from 'cloudfront';
 
-// updated the original example from below URL to use KVS 
-// https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/example-function-validate-token.html
 
 //Response when JWT is not valid.
 const response401 = {
@@ -10,7 +8,7 @@ const response401 = {
     statusDescription: 'Unauthorized'
 };
 
-// Replace the KVS_ID with your KVS ID
+// (Optional) Replace the KVS_ID with your KVS ID
 const kvsId = "KVS_ID";
 const kvsKey = 'jwt.secret';
 // set to true to enable console logging
