@@ -8,8 +8,8 @@ const response401 = {
     statusDescription: 'Unauthorized'
 };
 
-// (Optional) Replace the KVS_ID with your KVS ID
-const kvsId = "KVS_ID";
+// Remember to associate the KVS to your function before calling the const kvsKey = 'jwt.secret'. 
+// https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/kvs-with-functions-associate.html
 const kvsKey = 'jwt.secret';
 // set to true to enable console logging
 const loggingEnabled = false;
