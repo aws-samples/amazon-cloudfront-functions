@@ -2,7 +2,7 @@
 
 **CloudFront Functions event type: viewer request**
 
-This function validates a JSON Web Token (JWT) in the query string of the incoming request. It is compatible with JavaScript 2.0 runtime. Using your CloudFront KeyValueStore ID is optional.
+This function validates a JSON Web Token (JWT) in the query string of the incoming request. It is compatible with the CloudFront Functions [JavaScript 2.0 runtime](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/functions-javascript-runtime-20.html) and uses [CloudFront KeyValueStore](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/kvs-with-functions.html) to store the secret. Using your CloudFront KeyValueStore ID is optional.
 
 JWT is an open, industry standard [RFC 7519](https://tools.ietf.org/html/rfc7519) method for representing claims securely between two parties. You can use JWTs to validate that a viewer has the right access to view the content being requested. You can use this type of tokenization to give a user of your site a URL that is timebound. After the predetermined expiry time is reached, the user no longer has access to the content on that URL.
 
