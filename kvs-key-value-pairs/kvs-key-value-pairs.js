@@ -1,6 +1,7 @@
 import cf from 'cloudfront';
 ​
-// (Optional) Declare the ID of the key value store that you have associated with this function
+// Remember to associate the KVS with your function before referencing KVS in your code.
+// https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/kvs-with-functions-associate.html
 
 const kvsId = "a1b2c3d4-5678-90ab-cdef-EXAMPLE11111";
 ​
