@@ -2,6 +2,8 @@
 
 **CloudFront Functions event type: viewer request**
 
+**Note:** We recommend using the [kvs-jwt-verify example](https://github.com/aws-samples/amazon-cloudfront-functions/tree/main/kvs-jwt-verify) instead. It uses Amazon CloudFront KeyValueStore to store the secret key, and is compatible with JavaScript 2.0 runtime. 
+
 This function validates a JSON Web Token (JWT) in the query string of the incoming request. JWT is an open, industry standard [RFC 7519](https://tools.ietf.org/html/rfc7519) method for representing claims securely between two parties. You can use JWTs to validate that a viewer has the right access to view the content being requested. You can use this type of tokenization to give a user of your site a URL that is time bound. Once the predetermined expiry time is reached, the user no longer has access to the content on that URL.
 
 This function has two components. First, your origin or application must be able to generate a JWT and append that token as a query string to the URL. Second, you must use this sample function (or some variation of this function) on a viewer request event type to validate the JWT in the query string, ensuring that the URL hasn't been changed or tampered with and the expiry time hasn't passed. If the token is valid and the expiry time hasn't passed, the request passes through to CloudFront and the request is served. If the token is invalid or the expiry time has passed, the function generates and serves a 401 Unauthorized response to the viewer.
