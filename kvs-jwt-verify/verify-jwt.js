@@ -128,7 +128,7 @@ async function handler(event) {
 async function getSecret() {
     // initialize cloudfront kv store and get the key value 
     try {
-        const kvsHandle = cf.kvs(kvsId);
+        const kvsHandle = cf.kvs();
         return await kvsHandle.get(kvsKey);
     } catch (err) {
         log(`Error reading value for key: ${kvsKey}, error: ${err}`);
