@@ -3,6 +3,8 @@ import cf from 'cloudfront';
 // Remember to associate the KVS with your function before referencing KVS in your code.
 // https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/kvs-with-functions-associate.html
 ​
+const kvsHandle = cf.kvs();
+
 async function handler(event) {
     const request = event.request;
     // Use the first segment of the pathname as key
