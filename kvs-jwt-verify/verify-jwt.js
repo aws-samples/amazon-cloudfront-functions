@@ -1,17 +1,14 @@
 import crypto from 'crypto';
 import cf from 'cloudfront';
 
-// updated the original example from below URL to use KVS 
-// https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/example-function-validate-token.html
-
 //Response when JWT is not valid.
 const response401 = {
     statusCode: 401,
     statusDescription: 'Unauthorized'
 };
 
-// Replace the KVS_ID with your KVS ID
-const kvsId = "KVS_ID";
+// Remember to associate the KVS with your function before calling the const kvsKey = 'jwt.secret'. 
+// https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/kvs-with-functions-associate.html
 const kvsKey = 'jwt.secret';
 // set to true to enable console logging
 const loggingEnabled = false;
@@ -67,12 +64,12 @@ function _constantTimeEquals(a, b) {
     if (a.length != b.length) {
         return false;
     }
-    
+
     let xor = 0;
     for (let i = 0; i < a.length; i++) {
     xor |= (a.charCodeAt(i) ^ b.charCodeAt(i));
     }
-    
+
     return 0 === xor;
 }
 
@@ -130,7 +127,7 @@ async function handler(event) {
 async function getSecret() {
     // initialize cloudfront kv store and get the key value 
     try {
-        const kvsHandle = cf.kvs(kvsId);
+        const kvsHandle = cf.kvs();
         return await kvsHandle.get(kvsKey);
     } catch (err) {
         log(`Error reading value for key: ${kvsKey}, error: ${err}`);

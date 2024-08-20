@@ -10,7 +10,7 @@
         "method": "GET",
         "uri": "/index.html",
         "querystring": {
-            "jwt": { "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJuYmYiOjE3MTYyMzkwMjIsImV4cCI6MTcxNjIzOTAyMn0.UriVvKld0EczrbIf08lRLu2_VJ2LHpxFR8ZyLtE2Ed8"},
+            "jwt": { "value": "Not-A-JWT"},
             "test": {"value": "anotherQueryString"}
         },
         "headers": {

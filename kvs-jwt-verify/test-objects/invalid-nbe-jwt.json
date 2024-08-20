@@ -10,7 +10,7 @@
         "method": "GET",
         "uri": "/index.html",
         "querystring": {
-            "jwt": { "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJuYmYiOjE1MTYyMzkwMjIsImV4cCI6MTUxNjIzOTAyMn0.4lhOcnLYkO-eq5M1_TU1ZB9RUL_Y195MGH2eZ6Fr_BI"},
+            "jwt": { "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJuYmYiOjE3MTYyMzkwMjIsImV4cCI6MTcxNjIzOTAyMn0.UriVvKld0EczrbIf08lRLu2_VJ2LHpxFR8ZyLtE2Ed8"},
             "test": {"value": "anotherQueryString"}
         },
         "headers": {
