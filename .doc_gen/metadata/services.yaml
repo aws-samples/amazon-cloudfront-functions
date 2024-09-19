@@ -1,4 +1,4 @@
-cloudfront-functions:
+cloudfront_functions:
   bundle: cloudfront
   long: "&CFlong; Functions"
   short: "&CF; Functions"
