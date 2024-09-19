@@ -1,0 +1,188 @@
+cloudfront-functions_add_cache_control_header:
+  title: Add a cache control header to a &CF; Functions viewer response event
+  title_abbrev: Add a cache control header
+  synopsis: add a cache control header to a &CF; Functions viewer response event.
+
+  category: CloudFront Functions examples
+  languages:
+    JavaScript:
+      versions:
+        - sdk_version: 2
+          github: https://github.com/aws-samples/amazon-cloudfront-functions/blob/main/add-cache-control-header
+          excerpts:
+            - description:
+              snippet_files:
+                - index.js
+  services:
+    cloudfront:
+cloudfront-functions_add_cors_header:
+  title: Add a CORS header to a &CF; Functions viewer response event
+  title_abbrev: Add a CORS header
+  synopsis: add a CORS header to a &CF; Functions viewer response event.
+
+  category: CloudFront Functions examples
+  languages:
+    JavaScript:
+      versions:
+        - sdk_version: 2
+          github: https://github.com/aws-samples/amazon-cloudfront-functions/blob/main/add-cors-header
+          excerpts:
+            - description:
+              snippet_files:
+                - index.js
+  services:
+    cloudfront:
+cloudfront-functions_add_origin_header:
+  title: Add an origin header to a &CF; Functions viewer request event
+  title_abbrev: Add an origin header
+  synopsis: add an origin header to a &CF; Functions viewer request event.
+
+  category: CloudFront Functions examples
+  languages:
+    JavaScript:
+      versions:
+        - sdk_version: 2
+          github: https://github.com/aws-samples/amazon-cloudfront-functions/blob/main/add-origin-header
+          excerpts:
+            - description:
+              snippet_files:
+                - index.js
+  services:
+    cloudfront:
+cloudfront-functions_add_security_headers:
+  title: Add HTTP security headers to a &CF; Functions viewer response event
+  title_abbrev: Add HTTP security headers
+  synopsis: add HTTP security headers to a &CF; Functions viewer response event.
+
+  category: CloudFront Functions examples
+  languages:
+    JavaScript:
+      versions:
+        - sdk_version: 2
+          github: https://github.com/aws-samples/amazon-cloudfront-functions/blob/main/add-security-headers
+          excerpts:
+            - description:
+              snippet_files:
+                - index.js
+  services:
+    cloudfront:
+cloudfront-functions_add_true_client_ip_header:
+  title: Add a true client IP header to a &CF; Functions viewer request event
+  title_abbrev: Add a true client IP header
+  synopsis: add a true client IP header to a &CF; Functions viewer request event.
+
+  category: CloudFront Functions examples
+  languages:
+    JavaScript:
+      versions:
+        - sdk_version: 2
+          github: https://github.com/aws-samples/amazon-cloudfront-functions/blob/main/add-true-client-ip-header
+          excerpts:
+            - description:
+              snippet_files:
+                - index.js
+  services:
+    cloudfront:
+cloudfront-functions_kvs_conditional_read:
+  title: Rewrite a request URI based on KeyValueStore configuration for a &CF; Functions viewer request event
+  title_abbrev: Rewrite a request URI
+  synopsis: rewrite a request URI based on KeyValueStore configuration for a &CF; Functions viewer request event.
+
+  category: CloudFront Functions examples
+  languages:
+    JavaScript:
+      versions:
+        - sdk_version: 2
+          github: https://github.com/aws-samples/amazon-cloudfront-functions/blob/main/kvs-conditional-read
+          excerpts:
+            - description:
+              snippet_files:
+                - ABUriMappingFunction.js
+  services:
+    cloudfront:
+cloudfront-functions_kvs_jwt_verify:
+  title: Validate a simple token in a &CF; Functions viewer request
+  title_abbrev: Validate a simple token
+  synopsis: validate a simple token in a &CF; Functions viewer request.
+
+  category: CloudFront Functions examples
+  languages:
+    JavaScript:
+      versions:
+        - sdk_version: 2
+          github: https://github.com/aws-samples/amazon-cloudfront-functions/blob/main/kvs-jwt-verify
+          excerpts:
+            - description:
+              snippet_files:
+                - verify-jwt.js
+  services:
+    cloudfront:
+cloudfront-functions_kvs_key_value_pairs:
+  title: Use key-value pairs in a &CF; Functions viewer request
+  title_abbrev: Use key-value pairs
+  synopsis: use key-value pairs in a &CF; Functions viewer request.
+
+  category: CloudFront Functions examples
+  languages:
+    JavaScript:
+      versions:
+        - sdk_version: 2
+          github: https://github.com/aws-samples/amazon-cloudfront-functions/blob/main/kvs-key-value-pairs
+          excerpts:
+            - description:
+              snippet_files:
+                - kvs-key-value-pairs.js
+  services:
+    cloudfront:
+cloudfront-functions_normalize_query_string_parameters:
+  title: Normalize query string parameters in a &CF; Functions viewer request
+  title_abbrev: Normalize query string parameters
+  synopsis: normalize query string parameters in a &CF; Functions viewer request.
+
+  category: CloudFront Functions examples
+  languages:
+    JavaScript:
+      versions:
+        - sdk_version: 2
+          github: https://github.com/aws-samples/amazon-cloudfront-functions/blob/main/normalize-query-string-parameters
+          excerpts:
+            - description:
+              snippet_files:
+                - normalize-query-string.js
+  services:
+    cloudfront:
+cloudfront-functions_redirect_based_on_country:
+  title: Redirect to a new URL in a &CF; Functions viewer request event
+  title_abbrev: Redirect to a new URL
+  synopsis: redirect to a new URL in a &CF; Functions viewer request event.
+
+  category: CloudFront Functions examples
+  languages:
+    JavaScript:
+      versions:
+        - sdk_version: 2
+          github: https://github.com/aws-samples/amazon-cloudfront-functions/blob/main/redirect-based-on-country
+          excerpts:
+            - description:
+              snippet_files:
+                - index.js
+  services:
+    cloudfront:
+cloudfront-functions_url_rewrite_single_page_apps:
+  title: Add index.html to request URLs without a file name in a &CF; Functions viewer request event
+  title_abbrev: Add index.html to request URLs
+  synopsis: add index.html to request URLs without a file name in a &CF; Functions viewer request event.
+
+  category: CloudFront Functions examples
+  languages:
+    JavaScript:
+      versions:
+        - sdk_version: 2
+          github: https://github.com/aws-samples/amazon-cloudfront-functions/blob/main/url-rewrite-single-page-apps
+          excerpts:
+            - description:
+              snippet_files:
+                - index.js
+  services:
+    cloudfront:
+

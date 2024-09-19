@@ -1,0 +1,15 @@
+cloudfront-functions:
+  bundle: cloudfront
+  long: "&CFlong; Functions"
+  short: "&CF; Functions"
+  sort: CloudFront Functions
+  expanded:
+    long: Amazon CloudFront Functions
+    short: CloudFront Functions
+  blurb: helps you write lightweight functions in JavaScript for high-scale, latency-sensitive CDN customizations.
+  guide:
+    subtitle: Developer Guide
+	  url: AmazonCloudFront/latest/DeveloperGuide/cloudfront-functions.html
+  tags:
+    product_categories: { "Networking &amp; Content Delivery" }
+  version: 1
