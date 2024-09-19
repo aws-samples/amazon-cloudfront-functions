@@ -1,0 +1,22 @@
+name: Validate Documentation Metadata
+
+on:  # yamllint disable-line rule:truthy
+  workflow_dispatch:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate-doc-metadata:
+    name: Validate Doc Metadata
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: checkout repo content
+        uses: actions/checkout@v4
+      - name: validate metadata
+        uses: awsdocs/aws-doc-sdk-examples-tools@2024-09-13-B
+        with:
+          doc_gen_only: "False"
+          strict_titles: "True"

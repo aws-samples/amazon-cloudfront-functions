@@ -1,3 +1,6 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+
 import cf from 'cloudfront'; 
 
 // (Optional) Replace KVS_ID with actual KVS ID
