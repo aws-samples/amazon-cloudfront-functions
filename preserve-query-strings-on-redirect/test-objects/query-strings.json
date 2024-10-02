@@ -1,0 +1,27 @@
+{
+    "version": "1.0",
+    "context": {
+        "eventType": "viewer-request"
+    },
+    "viewer": {
+        "ip": "0.0.0.0"
+    },
+    "request": {
+        "method": "GET",
+        "uri": "/example-page",
+        "querystring": {
+            "name": { "value": "example-name"},
+            "test": {"value": "example-test-query-string"},
+            "querymv": {
+                "value": "val1",
+                "multiValue": [
+                    {"value": "val1"},
+                    {"value": "val2,val3"}
+                ]}
+        },
+        "headers": {
+            "host": { "value": "www.example.com" },
+            "accept": { "value": "text/html", "multivalue": [ { "value": "text/html" }, { "value": "application/xhtml+xml" } ] }
+        }
+    }
+}
