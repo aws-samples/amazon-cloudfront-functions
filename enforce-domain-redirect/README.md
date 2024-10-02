@@ -1,4 +1,4 @@
-## Rediret any host that is not the enforced domain
+## Redirect any host that is not the enforced domain
 
 **CloudFront Functions event type: viewer request**
 
