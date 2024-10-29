@@ -1,6 +1,6 @@
 async function handler(event)  {
-    const request = event.request;
-    const response  = event.response;
+    var request = event.request;
+    var response  = event.response;
  
     // If Access-Control-Allow-Origin CORS header is missing, add it.
     // Since JavaScript doesn't allow for hyphens in variable names, we use the dict["key"] notation.
