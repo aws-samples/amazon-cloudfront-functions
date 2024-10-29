@@ -1,6 +1,6 @@
-function handler(event) {
-    var request = event.request;
-    var uri = request.uri;
+async function handler(event) {
+    const request = event.request;
+    const uri = request.uri;
     
     // Check whether the URI is missing a file name.
     if (uri.endsWith('/')) {
