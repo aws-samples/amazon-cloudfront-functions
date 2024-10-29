@@ -1,6 +1,6 @@
 async function handler(event) {
-    const response = event.response;
-    const headers = response.headers;
+    var response = event.response;
+    var headers = response.headers;
     
     if (response.statusCode >= 200 && response.statusCode < 400) {
         // Set the cache-control header
