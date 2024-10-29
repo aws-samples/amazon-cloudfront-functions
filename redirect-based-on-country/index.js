@@ -1,14 +1,14 @@
 async function handler(event) {
-    const request = event.request;
-    const headers = request.headers;
-    const host = request.headers.host.value;
-    const country = Symbol.for('DE'); // Choose a country code
-    const newurl = `https://${host}/de/index.html`; // Change the redirect URL to your choice 
+    var request = event.request;
+    var headers = request.headers;
+    var host = request.headers.host.value;
+    var country = Symbol.for('DE'); // Choose a country code
+    var newurl = `https://${host}/de/index.html`; // Change the redirect URL to your choice 
   
     if (headers['cloudfront-viewer-country']) {
-        const countryCode = Symbol.for(headers['cloudfront-viewer-country'].value);
+        var countryCode = Symbol.for(headers['cloudfront-viewer-country'].value);
         if (countryCode === country) {
-            const response = {
+            var response = {
                 statusCode: 302,
                 statusDescription: 'Found',
                 headers:
