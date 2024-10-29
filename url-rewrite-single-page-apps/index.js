@@ -1,4 +1,4 @@
-function handler(event) {
+async function handler(event) {
     var request = event.request;
     var uri = request.uri;
     

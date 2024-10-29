@@ -1,9 +1,9 @@
-function handler(event) {
+async function handler(event) {
     var request = event.request;
     var headers = request.headers;
     var host = request.headers.host.value;
     var country = 'DE' // Choose a country code
-    var newurl = `https://${host}/de/index.html` // Change the redirect URL to your choice 
+    var newurl = `https://${host}/de/index.html`; // Change the redirect URL to your choice 
   
     if (headers['cloudfront-viewer-country']) {
         var countryCode = headers['cloudfront-viewer-country'].value;
