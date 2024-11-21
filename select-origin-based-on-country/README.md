@@ -1,0 +1,7 @@
+## Route requests to an origin closer to the viewer’s country
+
+**CloudFront Functions event type: viewer request**
+
+This function makes use of the `Cloudfront-Viewer-Country` [geolocation header](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/using-cloudfront-headers.html#cloudfront-headers-viewer-location) which performs a lookup on the request to determine the user's country and includes that value in the `Cloudfront-Viewer-Country` request header. For the geolocation or device detection headers to appear in the request object within a function, you must allow these headers (or allow all viewer headers) in a CloudFront [origin request policy](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/controlling-origin-requests.html#origin-request-understand-origin-request-policy) or [cache policy](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/controlling-the-cache-key.html#cache-key-understand-cache-policy).
+
+This function assumes content is replicated to five geographically dispersed Amazon S3 buckets. Based on the `Cloudfront-Viewer-Country` header, this function modifies the origin of the request to the geographically closest Amazon S3 bucket to the user. Each S3 bucket is private and protected using CloudFront's [origin access control](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html). If the requested content is not found in the CloudFront cache, CloudFront will fetch the content from the S3 bucket closest to the viewer.
