@@ -185,4 +185,20 @@ cloudfront_functions_url_rewrite_single_page_apps:
                 - url-rewrite-single-page-apps/index.js
   services:
     cloudfront:
+cloudfront_functions_select_origin_based_on_country:
+  title: Route requests to an origin closer to the viewer in a &CF; Functions viewer request event
+  title_abbrev: Select origin closer to the viewer
+  synopsis: route requests to an origin closer to the viewer in a &CF; Functions viewer request event.
 
+  category: CloudFront Functions examples
+  languages:
+    JavaScript:
+      versions:
+        - sdk_version: 102
+          github: https://github.com/aws-samples/amazon-cloudfront-functions/tree/main/select-origin-based-on-country
+          excerpts:
+            - description:
+              snippet_files:
+                - select-origin-based-on-country/index.js
+  services:
+    cloudfront:
