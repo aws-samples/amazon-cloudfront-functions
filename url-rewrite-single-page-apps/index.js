@@ -8,7 +8,14 @@ async function handler(event) {
     } 
     // Check whether the URI is missing a file extension.
     else if (!uri.includes('.')) {
-        request.uri += '/index.html';
+        var response = {
+            statusCode: 302,
+            statusDescription: 'Moved Permanently',
+            headers: {
+               'location': { value: uri + '/' }
+            }
+        };
+        return response;
     }
 
     return request;
