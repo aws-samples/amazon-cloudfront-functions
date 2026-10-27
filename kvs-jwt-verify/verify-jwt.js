@@ -30,9 +30,6 @@ function jwt_decode(token, key) {
     const payloadSeg = segments[1];
     const signatureSeg = segments[2];
 
-    // base64 decode and parse JSON
-    const payload = JSON.parse(_base64urlDecode(payloadSeg));
-
     const signingMethod = 'sha256';
     const signingType = 'hmac';
 
@@ -42,6 +39,9 @@ function jwt_decode(token, key) {
     if (!_verify(signingInput, key, signingMethod, signingType, signatureSeg)) {
         throw new Error('Signature verification failed');
     }
+
+    // base64 decode and parse JSON
+    const payload = JSON.parse(_base64urlDecode(payloadSeg));
 
     // Support for nbf and exp claims.
     // According to the RFC, they should be in seconds.
