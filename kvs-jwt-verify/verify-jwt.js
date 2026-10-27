@@ -25,23 +25,14 @@ function jwt_decode(token, key) {
         throw new Error('Not enough or too many segments');
     }
 
-    // All segment should be base64
-    const headerSeg = segments[0];
-    const payloadSeg = segments[1];
-    const signatureSeg = segments[2];
-
-    const signingMethod = 'sha256';
-    const signingType = 'hmac';
-
-    // Verify signature. `sign` will return base64 string.
-    const signingInput = [headerSeg, payloadSeg].join('.');
-
-    if (!_verify(signingInput, key, signingMethod, signingType, signatureSeg)) {
+    // Verify the HS256 signature
+    const expected = crypto.createHmac('sha256', key).update(`${segments[0]}.${segments[1]}`).digest('base64url');
+    if (!_constantTimeEquals(segments[2], expected)) {
         throw new Error('Signature verification failed');
     }
 
     // base64 decode and parse JSON
-    const payload = JSON.parse(_base64urlDecode(payloadSeg));
+    const payload = JSON.parse(Buffer.from(segments[1], 'base64url'));
 
     // Support for nbf and exp claims.
     // According to the RFC, they should be in seconds.
@@ -69,23 +60,6 @@ function _constantTimeEquals(a, b) {
     }
 
     return 0 === xor;
-}
-
-function _verify(input, key, method, type, signature) {
-    if(type === "hmac") {
-        return _constantTimeEquals(signature, _sign(input, key, method));
-    }
-    else {
-        throw new Error('Algorithm type not recognized');
-    }
-}
-
-function _sign(input, key, method) {
-    return crypto.createHmac(method, key).update(input).digest('base64url');
-}
-
-function _base64urlDecode(str) {
-    return Buffer.from(str, 'base64url')
 }
 
 async function handler(event) {
