@@ -50,8 +50,8 @@ function jwt_decode(token, key, noVerify, algorithm) {
             throw new Error('Token not yet active');
         }
 
-        if (payload.exp && Date.now() > payload.exp*1000) {
-            throw new Error('Token expired');
+        if (!payload.exp || Date.now() > payload.exp*1000) {
+            throw new Error('Token expired or missing exp');
         }
     }
 
