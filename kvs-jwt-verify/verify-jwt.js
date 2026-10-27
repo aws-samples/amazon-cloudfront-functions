@@ -4,12 +4,11 @@ import crypto from 'crypto';
 // Response when JWT is not valid
 const response401 = { statusCode: 401, statusDescription: 'Unauthorized' };
 
-// Remember to associate the KVS with your function before calling the const kvsKey = 'jwt.secret'. 
+// Remember to associate the KVS with your function before calling the const kvsKey = 'jwt.secret'.
 // https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/kvs-with-functions-associate.html
 const kvsKey = 'jwt.secret';
 // set to true to enable console logging
 const loggingEnabled = false;
-
 
 function jwtVerify(token, key) {
     // check token
@@ -57,40 +56,39 @@ function _constantTimeEquals(a, b) {
 }
 
 async function handler(event) {
-    let request = event.request;
+    const request = event.request;
 
     // Secret key used to verify the JWT, read from KeyValueStore
-    const secretKey = await getSecret()
+    const secretKey = await getSecret();
 
-    if(!secretKey) {
+    if (!secretKey) {
         return response401;
     }
 
     // No JWT in the query string, return 401
-    if(!request.querystring.jwt) {
+    if (!request.querystring.jwt) {
         log("Error: No JWT in the querystring");
         return response401;
     }
 
     const jwtToken = request.querystring.jwt.value;
 
-    try{ 
+    try {
         jwtVerify(jwtToken, secretKey);
-    }
-    catch(e) {
+    } catch (e) {
         log(e.message);
         return response401;
     }
 
-    //Remove the JWT from the query string if valid and return.
+    // Remove the JWT from the query string if valid and return
     delete request.querystring.jwt;
     log("Valid JWT token");
     return request;
 }
 
-// get secret from key value store 
+// get secret from key value store
 async function getSecret() {
-    // initialize cloudfront kv store and get the key value 
+    // initialize cloudfront kv store and get the key value
     try {
         const kvsHandle = cf.kvs();
         return await kvsHandle.get(kvsKey);
@@ -98,7 +96,6 @@ async function getSecret() {
         log(`Error reading value for key: ${kvsKey}, error: ${err}`);
         return null;
     }
-
 }
 
 function log(message) {
