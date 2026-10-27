@@ -11,7 +11,7 @@ const kvsKey = 'jwt.secret';
 const loggingEnabled = false;
 
 
-function jwt_decode(token, key) {
+function jwtVerify(token, key) {
     // check token
     if (!token) {
         throw new Error('No token supplied');
@@ -60,9 +60,9 @@ async function handler(event) {
     let request = event.request;
 
     // Secret key used to verify the JWT, read from KeyValueStore
-    const secret_key = await getSecret()
+    const secretKey = await getSecret()
 
-    if(!secret_key) {
+    if(!secretKey) {
         return response401;
     }
 
@@ -75,7 +75,7 @@ async function handler(event) {
     const jwtToken = request.querystring.jwt.value;
 
     try{ 
-        jwt_decode(jwtToken, secret_key);
+        jwtVerify(jwtToken, secretKey);
     }
     catch(e) {
         log(e.message);
