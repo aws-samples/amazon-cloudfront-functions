@@ -65,15 +65,14 @@ function _constantTimeEquals(a, b) {
 async function handler(event) {
     let request = event.request;
 
-    //Secret key used to verify JWT token.
-    //Update with your own key.
+    // Secret key used to verify the JWT, read from KeyValueStore
     const secret_key = await getSecret()
 
     if(!secret_key) {
         return response401;
     }
 
-    // If no JWT token, then generate HTTP redirect 401 response.
+    // No JWT in the query string, return 401
     if(!request.querystring.jwt) {
         log("Error: No JWT in the querystring");
         return response401;
@@ -85,7 +84,7 @@ async function handler(event) {
         jwt_decode(jwtToken, secret_key);
     }
     catch(e) {
-        log(e);
+        log(e.message);
         return response401;
     }
 
