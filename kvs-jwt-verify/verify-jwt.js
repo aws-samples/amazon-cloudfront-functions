@@ -1,11 +1,8 @@
-import crypto from 'crypto';
 import cf from 'cloudfront';
+import crypto from 'crypto';
 
-//Response when JWT is not valid.
-const response401 = {
-    statusCode: 401,
-    statusDescription: 'Unauthorized'
-};
+// Response when JWT is not valid
+const response401 = { statusCode: 401, statusDescription: 'Unauthorized' };
 
 // Remember to associate the KVS with your function before calling the const kvsKey = 'jwt.secret'. 
 // https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/kvs-with-functions-associate.html
@@ -47,19 +44,16 @@ function jwt_decode(token, key) {
     return payload;
 }
 
-//Function to ensure a constant time comparison to prevent
-//timing side channels.
+// Constant-time comparison to prevent timing side channels
 function _constantTimeEquals(a, b) {
-    if (a.length != b.length) {
+    if (a.length !== b.length) {
         return false;
     }
-
     let xor = 0;
     for (let i = 0; i < a.length; i++) {
-    xor |= (a.charCodeAt(i) ^ b.charCodeAt(i));
+        xor |= a.charCodeAt(i) ^ b.charCodeAt(i);
     }
-
-    return 0 === xor;
+    return xor === 0;
 }
 
 async function handler(event) {
