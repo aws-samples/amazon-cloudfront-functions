@@ -14,7 +14,7 @@ const kvsKey = 'jwt.secret';
 const loggingEnabled = false;
 
 
-function jwt_decode(token, key, noVerify, algorithm) {
+function jwt_decode(token, key) {
     // check token
     if (!token) {
         throw new Error('No token supplied');
@@ -33,26 +33,24 @@ function jwt_decode(token, key, noVerify, algorithm) {
     // base64 decode and parse JSON
     const payload = JSON.parse(_base64urlDecode(payloadSeg));
 
-    if (!noVerify) {
-        const signingMethod = 'sha256';
-        const signingType = 'hmac';
+    const signingMethod = 'sha256';
+    const signingType = 'hmac';
 
-        // Verify signature. `sign` will return base64 string.
-        const signingInput = [headerSeg, payloadSeg].join('.');
+    // Verify signature. `sign` will return base64 string.
+    const signingInput = [headerSeg, payloadSeg].join('.');
 
-        if (!_verify(signingInput, key, signingMethod, signingType, signatureSeg)) {
-            throw new Error('Signature verification failed');
-        }
+    if (!_verify(signingInput, key, signingMethod, signingType, signatureSeg)) {
+        throw new Error('Signature verification failed');
+    }
 
-        // Support for nbf and exp claims.
-        // According to the RFC, they should be in seconds.
-        if (payload.nbf && Date.now() < payload.nbf*1000) {
-            throw new Error('Token not yet active');
-        }
+    // Support for nbf and exp claims.
+    // According to the RFC, they should be in seconds.
+    if (payload.nbf && Date.now() < payload.nbf*1000) {
+        throw new Error('Token not yet active');
+    }
 
-        if (!payload.exp || Date.now() > payload.exp*1000) {
-            throw new Error('Token expired or missing exp');
-        }
+    if (!payload.exp || Date.now() > payload.exp*1000) {
+        throw new Error('Token expired or missing exp');
     }
 
     return payload;
