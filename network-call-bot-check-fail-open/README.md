@@ -36,22 +36,6 @@ aws cloudfront create-function \
 
 Leave out `KeyValueStoreAssociations` to run without a KVS. Then publish it with `aws cloudfront publish-function` and add it to a cache behavior, with `"EventType": "viewer-request"`.
 
-### Test
-
-Test invocations reject network calls: in `aws cloudfront test-function`, `cf.fetch` throws `TypeError: "cloudfront.fetch" is not available in test invocations`. This function calls the service on every request, so `test-function` shows the fail-open path and the KVS read. To see a verdict, send a request to the deployed distribution.
-
-```
-aws cloudfront test-function \
---name network-call-bot-check-fail-open \
---if-match EXXXXXXXXXXXX \
---event-object fileb://network-call-bot-check-fail-open/test-objects/request.json
-```
-
-| Test object | Expected `FunctionOutput` |
-|---|---|
-| `request.json` | The request, forwarded, with `x-bot-check: unavailable` and `x-bot-check-error: TypeError: "cloudfront.fetch" is not available in test invocations`. With no KVS: `x-bot-policy: tag`, `x-bot-policy-source: default: InternalError: "cloudfront.kvs" module is not configured`. With a KVS holding `bot-policy: block`: `x-bot-policy: block`, `x-bot-policy-source: kvs`, and still forwarded |
-| `forged-verdict-headers.json` | The same, and the viewer's `x-bot-verdict`, `x-bot-score` and `x-bot-check: ok` are gone |
-
 ### How it fails
 
 | What goes wrong | The viewer gets | Header on the forwarded request |
@@ -61,4 +45,4 @@ aws cloudfront test-function \
 | `TypeError`, `InternalError`, a body that is not JSON, an unknown verdict | forwarded, no verdict | `x-bot-check: unavailable`, `x-bot-check-error` |
 | No KVS, no `bot-policy` key, or an unknown value | policy `tag` | `x-bot-policy-source: default: <name>: <message>` |
 
-A deployable version with the origin, infrastructure and end-to-end tests: <DEPLOYABLE_REPO_URL>/patterns/03-bot-check-fail-open/
+A deployable version with the origin and infrastructure: <DEPLOYABLE_REPO_URL>/patterns/03-bot-check-fail-open/

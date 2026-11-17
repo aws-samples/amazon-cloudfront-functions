@@ -30,7 +30,7 @@ CloudFront functions are ideal for lightweight computation tasks on web requests
 
 ## Network calls
 
-A function on the `cloudfront-js-2.0` runtime can make one network call per invocation to an origin on the same distribution, named by its origin id: `cf.fetch` waits for the answer, `cf.beacon` sends and forgets. The whole call has a fixed 1 second limit. Test invocations (`aws cloudfront test-function`) reject network calls with a `TypeError`, so each example's test objects cover the paths that make no call and how the function handles that rejection; real answers need a deployed distribution.
+A function on the `cloudfront-js-2.0` runtime can make one network call per invocation to an origin on the same distribution, named by its origin id: `cf.fetch` waits for the answer, `cf.beacon` sends and forgets. The whole call has a fixed 1 second limit.
 
 |Example|Description|
 |------|-------|

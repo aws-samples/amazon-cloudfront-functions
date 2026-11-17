@@ -35,22 +35,6 @@ aws cloudfront create-function \
 
 Then publish it with `aws cloudfront publish-function` and add it to the cache behavior you want to protect, with `"EventType": "viewer-request"`.
 
-### Test
-
-Test invocations reject network calls: in `aws cloudfront test-function`, `cf.fetch` throws `TypeError: "cloudfront.fetch" is not available in test invocations`. This function calls the authorizer on every request, so `test-function` shows the fail-closed path. To see an allow or a deny, send a request to the deployed distribution.
-
-```
-aws cloudfront test-function \
---name network-call-authorizer-headers \
---if-match EXXXXXXXXXXXX \
---event-object fileb://network-call-authorizer-headers/test-objects/request-with-token.json
-```
-
-| Test object | Expected `FunctionOutput` |
-|---|---|
-| `request-with-token.json` | A `503` response, body `{"error":"authorizer_unavailable"}`, `x-authorizer-error: TypeError: "cloudfront.fetch" is not available in test invocations` |
-| `forged-identity-headers.json` | The same `503`. On a deployed distribution the viewer's `x-tenant` and `x-role` never reach the origin: only the values the authorizer grants do |
-
 ### How it fails
 
 | What goes wrong | The viewer gets |
@@ -61,4 +45,4 @@ aws cloudfront test-function \
 
 All denials carry `cache-control: no-store`.
 
-A deployable version with the origin, infrastructure and end-to-end tests: <DEPLOYABLE_REPO_URL>/patterns/02-authorizer-headers/
+A deployable version with the origin and infrastructure: <DEPLOYABLE_REPO_URL>/patterns/02-authorizer-headers/

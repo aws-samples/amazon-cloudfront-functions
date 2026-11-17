@@ -46,25 +46,6 @@ Publish both with `aws cloudfront publish-function` and add them to the same cac
 
 Delivery failures after the function returned are written to the function's CloudWatch Logs (`logDeliveryErrors: true`); that is the only place to see them.
 
-### Test
-
-Test invocations reject network calls: in `aws cloudfront test-function`, `cf.beacon` throws `TypeError: "cloudfront.beacon" is not available in test invocations`. So `test-function` shows the paths that make no call, and how the functions handle that rejection. To see events arrive, send requests to the deployed distribution and read the collector.
-
-```
-aws cloudfront test-function \
---name network-call-beacon-response \
---if-match EXXXXXXXXXXXX \
---event-object fileb://network-call-beacon-signal/test-objects/response-not-sampled.json
-```
-
-| Function | Test object | Expected `FunctionOutput` |
-|---|---|---|
-| `index.js` | `request.json` | The request, forwarded, with `x-signal-id: /index.html`, `x-signal: failed`, `x-signal-error: TypeError: "cloudfront.beacon" is not available in test invocations`. The viewer's own `x-signal` is gone. On a deployed distribution: `x-signal: beacon` |
-| `response-function.js` | `response-not-sampled.json` | The response with `x-signal-served: skipped`; no call |
-| `response-function.js` | `response-sampled.json` | The response with `x-signal-served: failed` and `x-signal-served-error: TypeError: ...`. On a deployed distribution: `x-signal-served: beacon` |
-
-The two response test objects differ only in `context.requestId`: `EXAMPLE-request-id-787` falls in the 1% sample, `EXAMPLE-request-id-0` does not.
-
 ### How it fails
 
 | What goes wrong | The viewer gets | Header |
@@ -76,4 +57,4 @@ The two response test objects differ only in `context.requestId`: `EXAMPLE-reque
 
 `x-signal: beacon` means handed off, not delivered. These headers are debug output: count events at the collector.
 
-A deployable version with the origin, infrastructure and end-to-end tests: <DEPLOYABLE_REPO_URL>/patterns/05-edge-signal-sqs/
+A deployable version with the origin and infrastructure: <DEPLOYABLE_REPO_URL>/patterns/05-edge-signal-sqs/

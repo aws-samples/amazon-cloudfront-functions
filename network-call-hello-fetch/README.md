@@ -33,24 +33,6 @@ aws cloudfront create-function \
 
 Then publish it with `aws cloudfront publish-function` and add it to a cache behavior of the distribution that has the `hello-origin` origin, with `"EventType": "viewer-request"`.
 
-### Test
-
-Test invocations reject network calls: in `aws cloudfront test-function`, `cf.fetch` throws `TypeError: "cloudfront.fetch" is not available in test invocations`. So `test-function` shows the paths that make no call, and how the function handles that rejection. To see a real answer from the origin, send a request to the deployed distribution.
-
-```
-aws cloudfront test-function \
---name network-call-hello-fetch \
---if-match EXXXXXXXXXXXX \
---event-object fileb://network-call-hello-fetch/test-objects/request.json
-```
-
-| Test object | Expected `FunctionOutput` |
-|---|---|
-| `request.json` | The request, forwarded, with `x-hello-error: TypeError: "cloudfront.fetch" is not available in test invocations` |
-| `viewer-supplied-headers.json` | The same, and the viewer's `x-hello-message` and `x-hello-status` are gone |
-
-On a deployed distribution, the origin receives `x-hello-message: hello from the origin` and `x-hello-status: 200`.
-
 ### How it fails
 
 | What goes wrong | What the origin receives |
@@ -60,4 +42,4 @@ On a deployed distribution, the origin receives `x-hello-message: hello from the
 | `TimeoutError` (no full answer within 1 second) or `InternalError` | `x-hello-error: TimeoutError: ...` or `InternalError: ...` |
 | The answer is not JSON | `x-hello-error: SyntaxError: ...` |
 
-A deployable version with the origin, infrastructure and end-to-end tests: <DEPLOYABLE_REPO_URL>/patterns/00-hello-fetch/
+A deployable version with the origin and infrastructure: <DEPLOYABLE_REPO_URL>/patterns/00-hello-fetch/

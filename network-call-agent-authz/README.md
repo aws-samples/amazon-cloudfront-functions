@@ -35,23 +35,6 @@ aws cloudfront create-function \
 
 Then publish it with `aws cloudfront publish-function` and add it to the cache behavior you want to protect, with `"EventType": "viewer-request"`.
 
-### Test
-
-Test invocations reject network calls: in `aws cloudfront test-function`, `cf.fetch` throws `TypeError: "cloudfront.fetch" is not available in test invocations`. So `test-function` shows the `401` path, which makes no call, and the fail-closed path. To see an allow or a deny, send a request to the deployed distribution.
-
-```
-aws cloudfront test-function \
---name network-call-agent-authz \
---if-match EXXXXXXXXXXXX \
---event-object fileb://network-call-agent-authz/test-objects/no-token.json
-```
-
-| Test object | Expected `FunctionOutput` |
-|---|---|
-| `no-token.json` | A `401` response, body `{"error":"unauthorized"}`, `www-authenticate: Bearer`; no call |
-| `read-with-token.json` | A `503` response, body `{"error":"authz_unavailable"}`, `x-agent-authz-error: TypeError: "cloudfront.fetch" is not available in test invocations` |
-| `write-with-token.json` | The same `503`. On a deployed distribution the service receives `"action": "write"` |
-
 ### How it fails
 
 | What goes wrong | The viewer gets |
@@ -61,4 +44,4 @@ aws cloudfront test-function \
 | The service answers non-2xx | `503`, `x-agent-authz-error: authz returned <status>`. A `403` usually means the call did not pass the origin's lock |
 | `TypeError`, `TimeoutError` (no full answer within 1 second), `InternalError`, or a body that is not JSON | `503`, `x-agent-authz-error: <name>: <message>` |
 
-A deployable version with the origin, infrastructure and end-to-end tests: <DEPLOYABLE_REPO_URL>/patterns/09-agent-authz/
+A deployable version with the origin and infrastructure: <DEPLOYABLE_REPO_URL>/patterns/09-agent-authz/

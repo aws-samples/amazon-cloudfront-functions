@@ -58,26 +58,6 @@ aws cloudfront-keyvaluestore put-key \
 --if-match EXXXXXXXXXXXX
 ```
 
-### Test
-
-Test invocations reject network calls: in `aws cloudfront test-function`, `cf.fetch` throws `TypeError: "cloudfront.fetch" is not available in test invocations`. So `test-function` shows the paths that make no call, and how the function handles that rejection. To see a failover, make the primary's `/health` answer `503` on a deployed distribution.
-
-```
-aws cloudfront test-function \
---name network-call-origin-health-failover \
---if-match EXXXXXXXXXXXX \
---event-object fileb://network-call-origin-health-failover/test-objects/post.json
-```
-
-| Function | Test object | Expected `FunctionOutput` |
-|---|---|---|
-| `index.js`, probe off | `post.json` | Forwarded with `x-route: primary`, `x-health-probe: off`; no call |
-| `index.js`, probe off | `get.json` | Forwarded to `/docs/index.html` with `x-route: primary`, `x-health-probe: off` |
-| `index.js`, probe off | `forged-routing-headers.json` | Same as `post.json`: the viewer's `x-route: fallback` and `x-health-probe: ok` are replaced |
-| `index.js`, `health-probe` is `on` | any of the three | Forwarded with `x-route: primary`, `x-health-probe: unavailable`, `x-health-probe-error: TypeError: "cloudfront.fetch" is not available in test invocations` (an invalid call fails open) |
-| `response-function.js` | `response-primary.json` | `x-served-by: primary`, the marker removed, `x-route` and `x-health-probe` copied |
-| `response-function.js` | `response-secondary.json` | `x-served-by: secondary`, `x-fallback: true`, the verdict headers copied |
-
 ### How it fails
 
 | What goes wrong | Where the request goes | Header |
@@ -90,4 +70,4 @@ aws cloudfront test-function \
 | Any other `TypeError`: the call itself is invalid | primary (fail open) | `x-health-probe: unavailable`, `x-health-probe-error` |
 | The origin helpers throw | primary | `x-route-error` |
 
-A deployable version with the origin, infrastructure and end-to-end tests: <DEPLOYABLE_REPO_URL>/patterns/08-origin-health-fallback/
+A deployable version with the origin and infrastructure: <DEPLOYABLE_REPO_URL>/patterns/08-origin-health-fallback/
