@@ -1,0 +1,19 @@
+{
+    "version": "1.0",
+    "context": {
+        "eventType": "viewer-request"
+    },
+    "viewer": {
+        "ip": "192.0.2.10"
+    },
+    "request": {
+        "method": "GET",
+        "uri": "/orders/48291",
+        "querystring": {},
+        "headers": {
+            "host": { "value": "www.example.com" },
+            "accept": { "value": "application/json" }
+        },
+        "cookies": {}
+    }
+}
