@@ -1,0 +1,21 @@
+{
+    "version": "1.0",
+    "context": {
+        "eventType": "viewer-request"
+    },
+    "viewer": {
+        "ip": "192.0.2.10"
+    },
+    "request": {
+        "method": "POST",
+        "uri": "/api/infer",
+        "querystring": {},
+        "headers": {
+            "host": { "value": "www.example.com" },
+            "content-type": { "value": "application/json" },
+            "x-route": { "value": "fallback" },
+            "x-health-probe": { "value": "ok" }
+        },
+        "cookies": {}
+    }
+}
