@@ -306,3 +306,107 @@ cloudfront_functions_network_call_agent_authz:
                 - network-call-agent-authz/index.js
   services:
     cloudfront:
+cloudfront_functions_network_call_cognito_auth:
+  title: Validate an Amazon Cognito access token with a network call in a &CF; Functions viewer request event
+  title_abbrev: Validate a Cognito token
+  synopsis: validate a bearer token with the Amazon Cognito GetUser API through cf.fetch and forward the user's identity headers, or deny the request.
+
+  category: CloudFront Functions examples
+  languages:
+    JavaScript:
+      versions:
+        - sdk_version: 102
+          github: https://github.com/aws-samples/amazon-cloudfront-functions/tree/main/network-call-cognito-auth
+          excerpts:
+            - description:
+              snippet_files:
+                - network-call-cognito-auth/index.js
+  services:
+    cloudfront:
+cloudfront_functions_network_call_ab_sticky_variant:
+  title: Assign a sticky A/B variant with KeyValueStore and a network call in &CF; Functions
+  title_abbrev: Sticky A/B variant
+  synopsis: read a user's A/B variant from KeyValueStore, assign one with cf.fetch only on a miss, and set the variant cookies in a viewer response event.
+
+  category: CloudFront Functions examples
+  languages:
+    JavaScript:
+      versions:
+        - sdk_version: 102
+          github: https://github.com/aws-samples/amazon-cloudfront-functions/tree/main/network-call-ab-sticky-variant
+          excerpts:
+            - description:
+              snippet_files:
+                - network-call-ab-sticky-variant/index.js
+                - network-call-ab-sticky-variant/response-function.js
+  services:
+    cloudfront:
+cloudfront_functions_network_call_vpc_private_routing:
+  title: Route a request through a private service behind a VPC origin with a network call in a &CF; Functions viewer request event
+  title_abbrev: Route through a VPC origin
+  synopsis: ask a private routing service behind a CloudFront VPC origin with cf.fetch which backend a tenant belongs to, and rewrite the URI.
+
+  category: CloudFront Functions examples
+  languages:
+    JavaScript:
+      versions:
+        - sdk_version: 102
+          github: https://github.com/aws-samples/amazon-cloudfront-functions/tree/main/network-call-vpc-private-routing
+          excerpts:
+            - description:
+              snippet_files:
+                - network-call-vpc-private-routing/index.js
+  services:
+    cloudfront:
+cloudfront_functions_network_call_kvs_config_read_through:
+  title: Read configuration through KeyValueStore with a network call in a &CF; Functions viewer request event
+  title_abbrev: KeyValueStore read-through config
+  synopsis: read a key's configuration from KeyValueStore and fetch it with cf.fetch only when the entry is missing or expired.
+
+  category: CloudFront Functions examples
+  languages:
+    JavaScript:
+      versions:
+        - sdk_version: 102
+          github: https://github.com/aws-samples/amazon-cloudfront-functions/tree/main/network-call-kvs-config-read-through
+          excerpts:
+            - description:
+              snippet_files:
+                - network-call-kvs-config-read-through/index.js
+  services:
+    cloudfront:
+cloudfront_functions_network_call_markdown_on_demand:
+  title: Serve markdown to AI agents and queue conversions with a network call from &CF; Functions
+  title_abbrev: Markdown for AI agents on demand
+  synopsis: serve AI agents a markdown copy of a page found in KeyValueStore, and queue a conversion with cf.beacon when there is none yet.
+
+  category: CloudFront Functions examples
+  languages:
+    JavaScript:
+      versions:
+        - sdk_version: 102
+          github: https://github.com/aws-samples/amazon-cloudfront-functions/tree/main/network-call-markdown-on-demand
+          excerpts:
+            - description:
+              snippet_files:
+                - network-call-markdown-on-demand/index.js
+                - network-call-markdown-on-demand/response-function.js
+  services:
+    cloudfront:
+cloudfront_functions_network_call_waiting_room:
+  title: Run a virtual waiting room with a network call in a &CF; Functions viewer request event
+  title_abbrev: Virtual waiting room
+  synopsis: draw a waiting room ticket with one cf.fetch call per viewer, and admit viewers by comparing a signed cookie with a watermark in KeyValueStore.
+
+  category: CloudFront Functions examples
+  languages:
+    JavaScript:
+      versions:
+        - sdk_version: 102
+          github: https://github.com/aws-samples/amazon-cloudfront-functions/tree/main/network-call-waiting-room
+          excerpts:
+            - description:
+              snippet_files:
+                - network-call-waiting-room/index.js
+  services:
+    cloudfront:
