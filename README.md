@@ -28,6 +28,19 @@ CloudFront functions are ideal for lightweight computation tasks on web requests
 |[Add CORS headers if missing](add-cors-header/)| This function adds an `Access-Control-Allow-Origin` response header if it is not present on the outgoing response from CloudFront.|
 |[Add a `Cache-Control` header](add-cache-control-header/)| This function adds a `Cache-Control` response header to the outgoing response from CloudFront for browser caching.|
 
+## Network calls
+
+A function on the `cloudfront-js-2.0` runtime can make one network call per invocation to an origin on the same distribution, named by its origin id: `cf.fetch` waits for the answer, `cf.beacon` sends and forgets. The whole call has a fixed 1 second limit. Test invocations (`aws cloudfront test-function`) reject network calls with a `TypeError`, so each example's test objects cover the paths that make no call and how the function handles that rejection; real answers need a deployed distribution.
+
+|Example|Description|
+|------|-------|
+|[Hello fetch](network-call-hello-fetch/)| The smallest network call: `GET /hello` on an origin, one JSON field copied into a request header. Fails open.|
+|[Authorizer with identity headers](network-call-authorizer-headers/)| POSTs the viewer context to an authorizer and forwards the request with the identity headers it grants, or answers 403. Fails closed.|
+|[Bot check that fails open](network-call-bot-check-fail-open/)| Asks a bot-detection service about each request while it reads a `block`, `tag` or `off` policy from KeyValueStore. A slow or broken service lets the request through.|
+|[Fire-and-forget signal](network-call-beacon-signal/)| Sends a small JSON event to a collector with `cf.beacon` on the way in, and a sampled event on the way out, without making the viewer wait.|
+|[Origin health probe and POST failover](network-call-origin-health-failover/)| Probes the primary's `/health` and sends a `POST` to a secondary origin when the primary is slow or down, which origin groups cannot do.|
+|[Per-request authorization for agents](network-call-agent-authz/)| Asks an authorization service whether a scoped token may read or write this URI, before the cache, so allowed reads can still be cache hits.|
+
 ## Deploying a CloudFront function using the AWS CLI
 We will use the example that adds cache control headers to responses as our function, but the same process can be used for all the functions with only minor changes.
 
