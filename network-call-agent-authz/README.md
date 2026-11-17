@@ -44,4 +44,4 @@ Then publish it with `aws cloudfront publish-function` and add it to the cache b
 | The service answers non-2xx | `503`, `x-agent-authz-error: authz returned <status>`. A `403` usually means the call did not pass the origin's lock |
 | `TypeError`, `TimeoutError` (no full answer within 1 second), `InternalError`, or a body that is not JSON | `503`, `x-agent-authz-error: <name>: <message>` |
 
-A deployable version with the origin and infrastructure: <DEPLOYABLE_REPO_URL>/patterns/09-agent-authz/
+A deployable version with the origin and infrastructure: https://github.com/aws-samples/sample-cloudfront-functions-network-calls-patterns/tree/main/patterns/09-agent-authz/

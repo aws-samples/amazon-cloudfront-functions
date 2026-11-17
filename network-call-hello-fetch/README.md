@@ -42,4 +42,4 @@ Then publish it with `aws cloudfront publish-function` and add it to a cache beh
 | `TimeoutError` (no full answer within 1 second) or `InternalError` | `x-hello-error: TimeoutError: ...` or `InternalError: ...` |
 | The answer is not JSON | `x-hello-error: SyntaxError: ...` |
 
-A deployable version with the origin and infrastructure: <DEPLOYABLE_REPO_URL>/patterns/00-hello-fetch/
+A deployable version with the origin and infrastructure: https://github.com/aws-samples/sample-cloudfront-functions-network-calls-patterns/tree/main/patterns/00-hello-fetch/

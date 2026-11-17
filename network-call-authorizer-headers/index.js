@@ -14,7 +14,7 @@ const IDENTITY_HEADERS = ['x-tenant', 'x-role'];
 // The viewer headers sent to the authorizer.
 const FORWARDED_HEADERS = ['authorization', 'user-agent'];
 const ERROR_HEADER = 'x-authorizer-error';
-const STATUS_TEXT = { 403: 'Forbidden', 503: 'Service Unavailable' };
+const STATUS_TEXT = { 401: 'Unauthorized', 403: 'Forbidden', 503: 'Service Unavailable' };
 
 function headerValue(headers, name) {
     return headers[name] ? headers[name].value : '';
@@ -90,6 +90,14 @@ async function handler(event) {
     const request = event.request;
     const headers = request.headers;
     stripIdentityHeaders(headers);
+
+    // No token, or an empty one: refuse here, without spending the network call.
+    const authorization = headers.authorization;
+    if (!authorization || !authorization.value.trim()) {
+        const missing = deny(401, 'missing_token');
+        missing.headers['www-authenticate'] = { value: 'Bearer' };
+        return missing;
+    }
 
     let answer;
     try {

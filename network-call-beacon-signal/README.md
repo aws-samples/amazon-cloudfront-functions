@@ -57,4 +57,4 @@ Delivery failures after the function returned are written to the function's Clou
 
 `x-signal: beacon` means handed off, not delivered. These headers are debug output: count events at the collector.
 
-A deployable version with the origin and infrastructure: <DEPLOYABLE_REPO_URL>/patterns/05-edge-signal-sqs/
+A deployable version with the origin and infrastructure: https://github.com/aws-samples/sample-cloudfront-functions-network-calls-patterns/tree/main/patterns/05-edge-signal-sqs/

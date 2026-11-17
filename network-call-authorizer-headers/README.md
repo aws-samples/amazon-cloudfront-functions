@@ -39,10 +39,11 @@ Then publish it with `aws cloudfront publish-function` and add it to the cache b
 
 | What goes wrong | The viewer gets |
 |---|---|
+| No `Authorization` header, or an empty one | `401`, `{"error":"missing_token"}`, `www-authenticate: Bearer`; no network call |
 | The authorizer answers anything but exactly `allow: true` | `403`, `{"error":"forbidden"}` |
 | The authorizer answers non-2xx | `503`, `x-authorizer-error: authorizer returned <status>`. A `403` usually means the call did not pass the origin's lock |
 | `TypeError`, `TimeoutError` (no full answer within 1 second), `InternalError`, or a body that is not JSON | `503`, `x-authorizer-error: <name>: <message>` |
 
 All denials carry `cache-control: no-store`.
 
-A deployable version with the origin and infrastructure: <DEPLOYABLE_REPO_URL>/patterns/02-authorizer-headers/
+A deployable version with the origin and infrastructure: https://github.com/aws-samples/sample-cloudfront-functions-network-calls-patterns/tree/main/patterns/02-authorizer-headers/

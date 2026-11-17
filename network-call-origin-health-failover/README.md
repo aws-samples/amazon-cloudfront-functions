@@ -70,4 +70,4 @@ aws cloudfront-keyvaluestore put-key \
 | Any other `TypeError`: the call itself is invalid | primary (fail open) | `x-health-probe: unavailable`, `x-health-probe-error` |
 | The origin helpers throw | primary | `x-route-error` |
 
-A deployable version with the origin and infrastructure: <DEPLOYABLE_REPO_URL>/patterns/08-origin-health-fallback/
+A deployable version with the origin and infrastructure: https://github.com/aws-samples/sample-cloudfront-functions-network-calls-patterns/tree/main/patterns/08-origin-health-fallback/

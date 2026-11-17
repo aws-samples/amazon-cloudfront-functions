@@ -45,4 +45,4 @@ Leave out `KeyValueStoreAssociations` to run without a KVS. Then publish it with
 | `TypeError`, `InternalError`, a body that is not JSON, an unknown verdict | forwarded, no verdict | `x-bot-check: unavailable`, `x-bot-check-error` |
 | No KVS, no `bot-policy` key, or an unknown value | policy `tag` | `x-bot-policy-source: default: <name>: <message>` |
 
-A deployable version with the origin and infrastructure: <DEPLOYABLE_REPO_URL>/patterns/03-bot-check-fail-open/
+A deployable version with the origin and infrastructure: https://github.com/aws-samples/sample-cloudfront-functions-network-calls-patterns/tree/main/patterns/03-bot-check-fail-open/
