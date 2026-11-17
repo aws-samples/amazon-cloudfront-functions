@@ -8,6 +8,56 @@ Why a network call: the tenant-to-backend map lives in a private service (a tena
 
 A [CloudFront KeyValueStore](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/kvs-with-functions.html) kill switch skips the call entirely. It is read before the call, never in parallel: once the call has started, the switch can no longer stop it. Routing is a convenience, not an access decision, so the function fails open: any failure forwards the request unchanged, and a KVS error leaves routing on. The function deletes viewer-supplied `x-backend`, `x-routing-error` and `x-routing-kvs-error` headers, and overwrites `x-tenant` with the value it used.
 
+### Architecture
+
+The deployable version of this example ([patterns/06-vpc-private-routing](https://github.com/aws-samples/sample-cloudfront-functions-network-calls-patterns/tree/main/patterns/06-vpc-private-routing))
+looks like this; this folder holds only the CloudFront Function code.
+In this example the tenant comes only from the `x-tenant` request header; the deployable version also accepts `?tenant=` for its demo page.
+
+![Architecture of the vpc-private-routing network call example](architecture.png)
+
+```mermaid
+flowchart LR
+  viewer["Viewer"]
+  subgraph dist["Distribution"]
+    cloudfront["Amazon CloudFront<br/>/patterns/vpc-private-routing/*"]
+    fn{{"viewer-request<br/>function"}}
+  end
+  kvs_store[("KVS<br/>routing-kill-switch")]
+  subgraph vpc_private["VPC, isolated subnets"]
+    alb_internal["Internal ALB<br/>(VPC origin, HTTP 80)"]
+  end
+  lambda_service["Lambda target<br/>/route, blue, green"]
+  viewer -->|"GET ?tenant=acme"| cloudfront
+  cloudfront -->|"1. viewer request"| fn
+  fn -->|"2. get kill switch"| kvs_store
+  fn -->|"3. cf.fetch GET /route?tenant=acme"| alb_internal
+  cloudfront -->|"4. forward to /blue/..."| alb_internal
+  alb_internal -->|"invoke"| lambda_service
+```
+
+### Sequence diagram
+
+```mermaid
+sequenceDiagram
+  autonumber
+  participant V as Viewer
+  participant F as CloudFront Function (viewer-request)
+  participant K as KVS
+  participant A as VPC origin, internal ALB, Lambda target
+  V->>F: GET /patterns/vpc-private-routing/whoami?tenant=acme
+  F->>K: get("routing-kill-switch")
+  alt kill switch "off"
+    F->>F: x-backend: off (no call)
+  else routing on
+    F->>A: cf.fetch GET /route?tenant=acme
+    A-->>F: {"backend":"blue" or "green"}
+    F->>F: uri = /patterns/vpc-private-routing/blue/whoami, x-backend
+  end
+  F->>A: forward (rewritten or unchanged)
+  A-->>V: 200 JSON from the chosen backend, or backend "none"
+```
+
 ### Requirements
 
 - **Runtime** `cloudfront-js-2.0`. Network calls are not available with continuous deployment or the free pricing plan.

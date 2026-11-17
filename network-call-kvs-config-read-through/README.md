@@ -8,6 +8,68 @@ Why a network call: KVS holds at most 5 MB and is written from outside, so it ca
 
 The KVS value carries its own expiry. An expired entry is read through again, which is how a hot key picks up a changed config. If that call fails, the expired value still beats the default. Config is not an access decision here, so the function fails open: the expired KVS entry, else `DEFAULT_CONFIG` (the lowest tier), and the request is always forwarded. If your config grants access, decide whether the default should deny instead. A key outside `a-z`, `0-9`, `-`, 1-32 characters gets `400` with no call. The function deletes viewer-supplied `x-config`, `x-config-key`, `x-config-source`, `x-config-hits` and `x-config-error` headers first.
 
+### Architecture
+
+The deployable version of this example ([patterns/07-kvs-config-plus-fetch](https://github.com/aws-samples/sample-cloudfront-functions-network-calls-patterns/tree/main/patterns/07-kvs-config-plus-fetch))
+looks like this; this folder holds only the CloudFront Function code.
+
+![Architecture of the kvs-config-read-through network call example](architecture.png)
+
+```mermaid
+flowchart LR
+  viewer["Viewer"]
+  subgraph dist["Distribution"]
+    cloudfront["Amazon CloudFront"]
+    fn{{"viewer-request<br/>function"}}
+  end
+  kvs_store[("KVS<br/>keys cfg-*")]
+  lambda_config["Lambda Web Function<br/>#quot;kvs-config-plus-fetch#quot; (IamAuth + OAC)"]
+  ddb_hotkeys[("DynamoDB<br/>hot-key table")]
+  lambda_promoter["Promoter Lambda"]
+  viewer -->|"GET /acme"| cloudfront
+  cloudfront -->|"1. viewer request"| fn
+  fn -->|"2. get cfg-acme"| kvs_store
+  fn -->|"3. cf.fetch GET /config/acme<br/>(miss or expired only)"| lambda_config
+  lambda_config -->|"4. ADD hits"| ddb_hotkeys
+  cloudfront -->|"5. forward with x-config-*"| lambda_config
+  ddb_hotkeys -.->|"stream: 5 hits<br/>in a minute"| lambda_promoter
+  lambda_promoter -.->|"UpdateKeys put cfg-acme<br/>(delete after 10 min)"| kvs_store
+```
+
+### Sequence diagram
+
+```mermaid
+sequenceDiagram
+  autonumber
+  participant V as Viewer
+  participant F as CloudFront Function (viewer-request)
+  participant K as KVS
+  participant L as Config Web Function "kvs-config-plus-fetch" (IamAuth + OAC)
+  participant D as DynamoDB hot-key table
+  participant P as Promoter Lambda
+  V->>F: GET /patterns/kvs-config-plus-fetch/acme
+  F->>F: drop viewer x-config-*
+  F->>K: get("cfg-acme")
+  alt fresh entry
+    K-->>F: {"exp":...,"config":{...}} (x-config-source: kvs, no call)
+  else miss or expired
+    F->>L: cf.fetch GET /config/acme
+    L->>D: ADD hits on hits#35;acme#35;<minute>
+    L-->>F: {"config":{...},"hits":3,"threshold":5} (x-config-source: origin)
+  else call fails
+    F->>F: expired entry (kvs-stale), else DEFAULT_CONFIG (default), x-config-error
+  end
+  F->>L: forward with x-config, x-config-key, x-config-source
+  L-->>V: 200 JSON echo of the x-config-* headers
+  Note over D,P: off the request path, from the table's stream
+  D-->>P: counter reached 5
+  P->>D: put marker kvs#35;acme (TTL = now + 10 min)
+  D-->>P: marker written
+  P->>K: UpdateKeys put cfg-acme (reaches the edge in about a minute)
+  D-->>P: marker removed by TTL
+  P->>K: UpdateKeys delete cfg-acme
+```
+
 ### Requirements
 
 - **Runtime** `cloudfront-js-2.0`. Network calls are not available with continuous deployment or the free pricing plan.

@@ -8,6 +8,59 @@ Why a network call: Cognito knows whether a token is still valid right now (a si
 
 A request with no `Authorization: Bearer` header is answered `401` by the function, before any call. The function fails closed: no verified identity, no request to the origin, and a Cognito that cannot be asked gives `503`. It deletes every viewer-supplied `x-user-*` header first, so a viewer cannot forge an identity. All denials carry `cache-control: no-store`.
 
+### Architecture
+
+The deployable version of this example ([patterns/01-cognito-auth](https://github.com/aws-samples/sample-cloudfront-functions-network-calls-patterns/tree/main/patterns/01-cognito-auth))
+looks like this; this folder holds only the CloudFront Function code.
+
+![Architecture of the cognito-auth network call example](architecture.png)
+
+```mermaid
+flowchart LR
+  waf_rate["AWS WAF rate rule<br/>on /token (demo)"]
+  viewer["Viewer"]
+  lambda_token["Lambda Web Function<br/>#quot;cognito-auth-token#quot; (IamAuth + OAC)"]
+  subgraph dist["Distribution"]
+    cloudfront["Amazon CloudFront<br/>/patterns/cognito-auth/*"]
+    fn{{"viewer-request<br/>function"}}
+  end
+  lambda_echo["Lambda Web Function<br/>#quot;cognito-auth-echo#quot; (IamAuth + OAC)"]
+  cognito_pool["Amazon Cognito user pool<br/>extra origin #quot;cognito-auth#quot;"]
+  viewer -->|"GET"| cloudfront
+  cloudfront -->|"1. viewer request"| fn
+  fn -->|"2. cf.fetch POST GetUser"| cognito_pool
+  cloudfront -->|"3. forward with x-user-sub"| lambda_echo
+  cloudfront -->|"demo: GET /token"| lambda_token
+  lambda_token -->|"InitiateAuth"| cognito_pool
+```
+
+### Sequence diagram
+
+```mermaid
+sequenceDiagram
+  autonumber
+  participant V as Viewer
+  participant F as CloudFront Function (viewer-request)
+  participant C as Cognito user pool endpoint (extra origin "cognito-auth")
+  participant O as Echo Lambda Web Function "cognito-auth-echo" (IamAuth + OAC)
+  V->>F: GET /patterns/cognito-auth/whoami, Authorization: Bearer token
+  F->>F: delete viewer-supplied x-user-* headers
+  alt no bearer token
+    F-->>V: 401 missing_token (no call)
+  else token present
+    F->>C: cf.fetch POST / (X-Amz-Target GetUser, AccessToken)
+    alt Cognito 2xx
+      C-->>F: UserAttributes (sub, ...)
+      F->>O: forward with x-user-sub, x-user-name
+      O-->>V: 200 echo of the injected identity
+    else Cognito non-2xx
+      F-->>V: 401 invalid_token
+    else error or timeout
+      F-->>V: 503 auth_unavailable, x-cognito-auth-error
+    end
+  end
+```
+
 ### Requirements
 
 - **Runtime** `cloudfront-js-2.0`. Network calls are not available with continuous deployment or the free pricing plan.

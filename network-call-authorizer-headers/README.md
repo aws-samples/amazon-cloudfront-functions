@@ -8,6 +8,50 @@ Why a network call: the decision needs data the function does not have (a user d
 
 The function deletes viewer-supplied `x-tenant` and `x-role` headers first, and copies back only the header names listed in `IDENTITY_HEADERS`, lowercased, so a buggy authorizer cannot overwrite `host` or `authorization`. It fails closed: an authorizer that cannot be asked gives `503`.
 
+### Architecture
+
+The deployable version of this example ([patterns/02-authorizer-headers](https://github.com/aws-samples/sample-cloudfront-functions-network-calls-patterns/tree/main/patterns/02-authorizer-headers))
+looks like this; this folder holds only the CloudFront Function code.
+
+![Architecture of the authorizer-headers network call example](architecture.png)
+
+```mermaid
+flowchart LR
+  viewer["Viewer"]
+  subgraph dist["Distribution"]
+    cloudfront["Amazon CloudFront<br/>/patterns/authorizer-headers/*"]
+    fn{{"viewer-request<br/>function"}}
+  end
+  lambda_authorizer["Lambda Web Function<br/>#quot;authorizer-headers#quot; (IamAuth + OAC)"]
+  viewer -->|"GET"| cloudfront
+  cloudfront -->|"1. viewer request"| fn
+  fn -->|"2. cf.fetch POST /authorize"| lambda_authorizer
+  cloudfront -->|"3. forward with x-tenant, x-role"| lambda_authorizer
+```
+
+### Sequence diagram
+
+```mermaid
+sequenceDiagram
+  autonumber
+  participant V as Viewer
+  participant F as CloudFront Function (viewer-request)
+  participant A as Lambda Web Function "authorizer-headers" (IamAuth + OAC)
+  V->>F: GET /patterns/authorizer-headers/echo, Authorization: Bearer demo-admin
+  F->>F: delete viewer-supplied x-tenant, x-role
+  F->>A: cf.fetch POST /authorize {ip, uri, method, headers}
+  alt allow true
+    A-->>F: {"allow":true,"headers":{"x-tenant":"acme","x-role":"admin"}}
+    F->>A: forward with x-tenant, x-role (echo route)
+    A-->>V: 200 echo of the identity headers
+  else allow false
+    A-->>F: {"allow":false,"headers":{}}
+    F-->>V: 403 forbidden
+  else non-2xx, bad JSON, error or timeout
+    F-->>V: 503 authorizer_unavailable, x-authorizer-headers-error
+  end
+```
+
 ### Requirements
 
 - **Runtime** `cloudfront-js-2.0`. Network calls are not available with continuous deployment or the free pricing plan.

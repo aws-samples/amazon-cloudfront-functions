@@ -11,6 +11,57 @@ Why a network call: request telemetry or audit events at the edge, sent to your 
 
 The request function deletes viewer-supplied `x-signal`, `x-signal-id` and `x-signal-error` headers before it sets its own.
 
+### Architecture
+
+The deployable version of this example ([patterns/05-edge-signal-sqs](https://github.com/aws-samples/sample-cloudfront-functions-network-calls-patterns/tree/main/patterns/05-edge-signal-sqs))
+looks like this; this folder holds only the CloudFront Function code.
+
+![Architecture of the beacon-signal network call example](architecture.png)
+
+```mermaid
+flowchart LR
+  viewer["Viewer"]
+  subgraph dist["Distribution"]
+    cloudfront["Amazon CloudFront<br/>/patterns/edge-signal-sqs/*"]
+    fn_request{{"viewer-request<br/>function"}}
+    fn_response{{"viewer-response<br/>function"}}
+  end
+  apigw_api["API Gateway REST API<br/>stage #quot;patterns#quot; (x-api-key)"]
+  sqs_queue["SQS FIFO queue"]
+  viewer -->|"GET"| cloudfront
+  cloudfront -->|"1. viewer request"| fn_request
+  fn_request -->|"2. cf.beacon POST /patterns/signal"| apigw_api
+  cloudfront -->|"3. forward (mock echo)"| apigw_api
+  cloudfront -->|"4. viewer response"| fn_response
+  fn_response -->|"5. cf.beacon on 5xx or x-signal-sample: 1"| apigw_api
+  apigw_api -->|"SendMessage<br/>(IAM role)"| sqs_queue
+```
+
+### Sequence diagram
+
+```mermaid
+sequenceDiagram
+  autonumber
+  participant V as Viewer
+  participant F as viewer-request function
+  participant A as API Gateway REST API (x-api-key)
+  participant Q as SQS FIFO queue
+  participant R as viewer-response function
+  V->>F: GET /patterns/edge-signal-sqs/hello
+  F-)A: cf.beacon POST /patterns/signal {kind: requested, uri, ip hash, ua, ts}
+  A-)Q: SendMessage (dedup id = uri)
+  Note over F: x-signal: beacon (handed off, nothing awaited)
+  F->>A: forward with x-signal-id
+  A-->>R: 200 echo of the x-signal* headers
+  alt status 5xx or request header x-signal-sample: 1
+    R-)A: cf.beacon POST /patterns/signal {kind: served, status, signalId}
+    A-)Q: SendMessage (dedup id = served:uri:status)
+  else
+    R->>R: x-signal-served: skipped (no call)
+  end
+  R-->>V: response
+```
+
 ### Requirements
 
 - **Runtime** `cloudfront-js-2.0`. Network calls are not available with continuous deployment or the free pricing plan. `cf.beacon` is the one network call of an invocation: a function that beacons cannot also call `cf.fetch`. The request and the response are two invocations, so each function gets its own call.

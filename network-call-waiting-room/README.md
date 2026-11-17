@@ -10,6 +10,89 @@ AWS WAF is part of the design: it guards the ticket counter. A browser's first p
 
 The function fails **closed**: the call is the protection, so when the counter cannot be reached, or there is no `queue-state` or secret yet, the viewer gets a waiting page and nothing reaches the origin. Only `mode: off`, an operator's choice, forwards without checks. Every answer from the function is `cache-control: no-store`. The shard of the counter is picked from a hash of the request id, not `Math.random()`, because a function cannot make a network call after generating random values. The function deletes viewer-supplied `x-wr` headers. `GET /leave` (the waiting page links to it) clears the cookies and frees a signed ticket that is still in line with one `cf.beacon`.
 
+### Architecture
+
+The deployable version of this example ([patterns/11-edge-waiting-room](https://github.com/aws-samples/sample-cloudfront-functions-network-calls-patterns/tree/main/patterns/11-edge-waiting-room))
+looks like this; this folder holds only the CloudFront Function code.
+
+![Architecture of the waiting-room network call example](architecture.png)
+
+```mermaid
+flowchart LR
+  viewer["Browser"]
+  waf["AWS WAF<br/>CAPTCHA, challenge,<br/>Bot Control (count)"]
+  subgraph dist["Distribution"]
+    cloudfront["Amazon CloudFront<br/>/patterns/edge-waiting-room/*"]
+    fn{{"viewer-request<br/>function"}}
+    kvs["KVS<br/>queue-state, secrets"]
+  end
+  subgraph aws["AWS Region"]
+    apigw["API Gateway REST API<br/>(x-api-key)<br/>enqueue, leave, mock origin"]
+    ddb["DynamoDB<br/>8 counter shards"]
+    lambda_admission["Admission Lambda"]
+    eventbridge["EventBridge<br/>rate 1 minute"]
+  end
+  viewer -->|"1. GET page load"| waf
+  waf -->|"2. + token id header"| cloudfront
+  cloudfront -->|"3. viewer request"| fn
+  kvs -->|"4. read"| fn
+  fn -->|"5. cf.fetch POST /enqueue<br/>(once per viewer)"| apigw
+  apigw -->|"6. ADD n 1"| ddb
+  cloudfront -->|"7. forward if admitted<br/>(x-wr: admitted)"| apigw
+  eventbridge -.->|"every minute"| lambda_admission
+  lambda_admission -.->|"read counters"| ddb
+  lambda_admission -.->|"UpdateKeys queue-state"| kvs
+```
+
+### Sequence diagram
+
+```mermaid
+sequenceDiagram
+  autonumber
+  participant V as Browser
+  participant W as AWS WAF (this path only)
+  participant F as viewer-request function
+  participant K as KVS
+  participant A as API Gateway REST API (x-api-key)
+  participant D as DynamoDB counters
+  participant L as admission Lambda (every minute)
+  alt a script (not a page load)
+    V->>W: GET /patterns/edge-waiting-room/shop, Accept: */*
+    W->>F: passes: CAPTCHA and challenge apply to page loads only
+    F->>K: get queue-state, queue-secret-cur, queue-secret-prev
+    F-->>V: 503 browsers-only + Retry-After: 5, no ticket, no call
+  else leave the line
+    V->>W: GET /patterns/edge-waiting-room/leave + wr_t
+    W->>F: passes: not a page load
+    F->>K: get queue-state, queue-secret-cur, queue-secret-prev
+    F-)A: cf.beacon POST /patterns/leave {epoch, ticket}, only for a signed ticket still in line
+    A-)D: UpdateItem e<epoch>-left ADD freed {ticket} (a number set)
+    F-->>V: 200 left (x-wr-place: freed), wr_t, wr_a and aws-waf-token expired
+  else a browser
+    V->>W: GET /patterns/edge-waiting-room/shop, no aws-waf-token
+    W-->>V: 405 CAPTCHA on the first visit (silent challenge once it expires)
+    V->>W: GET + aws-waf-token
+    W->>F: request + x-amzn-waf-wr-token-id (Bot Control label, interpolated)
+  end
+  F->>K: get queue-state, queue-secret-cur, queue-secret-prev
+  F->>A: cf.fetch POST /patterns/enqueue {epoch, shard}
+  A->>D: UpdateItem e<epoch>-<shard> ADD n 1
+  D-->>F: {"n": 42}, ticket = (42 - 1) * 8 + shard
+  F-->>V: 200 waiting page + wr_t (no-store)
+  loop every 5 s
+    V->>F: GET + wr_t
+    F->>K: get queue-state
+    F-->>V: 200 waiting page, position, no call
+  end
+  L->>D: BatchGetItem the 8 shards, GetItem the freed set
+  L->>K: UpdateKeys queue-state {serving past STEP waiting tickets, freed ones skipped}
+  V->>F: GET + wr_t, ticket < serving
+  F-->>V: 302 same URL + wr_a (bound to this client, 120 s)
+  V->>F: GET + wr_a
+  F->>A: forward (x-wr: admitted)
+  A-->>V: 200 from the protected origin
+```
+
 ### Requirements
 
 - **Runtime** `cloudfront-js-2.0`. Network calls are not available with continuous deployment or the free pricing plan.

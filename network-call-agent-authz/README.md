@@ -8,6 +8,54 @@ Why a network call: the per-resource policy lives in the service and can change 
 
 A request with no `Authorization` header is answered `401` by the function, before any call, so anonymous traffic costs nothing at the service. The function fails closed: only exactly `allowed: true` passes, and a service that cannot be asked gives `503`. All denials carry `cache-control: no-store`.
 
+### Architecture
+
+The deployable version of this example ([patterns/09-agent-authz](https://github.com/aws-samples/sample-cloudfront-functions-network-calls-patterns/tree/main/patterns/09-agent-authz))
+looks like this; this folder holds only the CloudFront Function code.
+
+![Architecture of the agent-authz network call example](architecture.png)
+
+```mermaid
+flowchart LR
+  viewer["AI agent<br/>Authorization: Bearer ..."]
+  subgraph dist["Distribution"]
+    cloudfront["Amazon CloudFront<br/>/patterns/agent-authz/*"]
+    fn{{"viewer-request<br/>function"}}
+  end
+  lambda_authz["Lambda Web Function<br/>#quot;agent-authz#quot; (IamAuth + OAC)"]
+  viewer -->|"GET /orders/48291"| cloudfront
+  cloudfront -->|"1. viewer request"| fn
+  fn -->|"2. cf.fetch POST /v1/check"| lambda_authz
+  fn -->|"401 / 403 / 503"| viewer
+  cloudfront -->|"3. if allowed: forward on a cache miss"| lambda_authz
+```
+
+### Sequence diagram
+
+```mermaid
+sequenceDiagram
+  autonumber
+  participant V as Agent
+  participant F as CloudFront Function (viewer-request)
+  participant C as CloudFront cache
+  participant A as Lambda Web Function "agent-authz" (IamAuth + OAC)
+  V->>F: GET /patterns/agent-authz/orders/48291, Authorization: Bearer demo-agent-token
+  alt no Authorization header, or an empty one
+    F-->>V: 401 unauthorized (no call made)
+  end
+  F->>A: cf.fetch POST /v1/check {action: "read", resource: uri, token}
+  alt allowed true
+    A-->>F: {"allowed":true}
+    F->>C: forward the request
+    C-->>V: 200 order (cache hit, or from the orders route, cached 60 s)
+  else allowed false
+    A-->>F: {"allowed":false}
+    F-->>V: 403 forbidden
+  else non-2xx, bad JSON, error or timeout
+    F-->>V: 503 authz_unavailable, x-agent-authz-error
+  end
+```
+
 ### Requirements
 
 - **Runtime** `cloudfront-js-2.0`. Network calls are not available with continuous deployment or the free pricing plan.

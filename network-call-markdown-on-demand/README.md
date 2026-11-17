@@ -10,6 +10,88 @@ Markdown is an optimization, not a gate, so both functions fail open: a failed K
 
 The response function makes no call. It copies the request function's verdict onto the response (an S3 origin echoes nothing) and adds `Vary: Accept, User-Agent`, because the same URL answers HTML or markdown.
 
+### Architecture
+
+The deployable version of this example ([patterns/10-markdown-on-demand](https://github.com/aws-samples/sample-cloudfront-functions-network-calls-patterns/tree/main/patterns/10-markdown-on-demand))
+looks like this; this folder holds only the CloudFront Function code.
+The `/reset` steps are a demo endpoint of the deployable version; this example has no reset.
+
+![Architecture of the markdown-on-demand network call example](architecture.png)
+
+```mermaid
+flowchart LR
+  viewer["Browser or AI agent"]
+  waf_acl["AWS WAF<br/>Bot Control (count)"]
+  subgraph dist["Distribution"]
+    fn_response{{"viewer-response<br/>function"}}
+    cloudfront["Amazon CloudFront<br/>/patterns/markdown-on-demand/*"]
+    fn_request{{"viewer-request<br/>function"}}
+    kvs_md[("KVS<br/>md:uri keys")]
+  end
+  apigw_queue["API Gateway REST API<br/>(x-api-key)"]
+  sqs_queue["SQS FIFO queue"]
+  lambda_worker["Worker Lambda<br/>(turndown)"]
+  s3_pages["S3 bucket (OAC)<br/>pages + .md"]
+  eventbridge_sweep["EventBridge<br/>hourly sweep"]
+  viewer -->|"GET"| waf_acl
+  waf_acl -->|"1. x-amzn-waf-ai-agent"| cloudfront
+  cloudfront -->|"2. viewer request"| fn_request
+  fn_request -->|"3. get md:uri"| kvs_md
+  fn_request -->|"4. cf.beacon<br/>on a miss"| apigw_queue
+  cloudfront -->|"5. GET .html or .md"| s3_pages
+  cloudfront -->|"6. x-markdown, Vary"| fn_response
+  apigw_queue -.->|"SendMessage"| sqs_queue
+  sqs_queue -.->|"messages"| lambda_worker
+  lambda_worker -->|"PUT .md"| s3_pages
+  lambda_worker -->|"PutKey / DeleteKey"| kvs_md
+  eventbridge_sweep -.->|"hourly"| lambda_worker
+```
+
+### Sequence diagram
+
+```mermaid
+sequenceDiagram
+  autonumber
+  participant V as Viewer (browser or agent)
+  participant B as AWS WAF (Bot Control, count)
+  participant F as viewer-request function
+  participant K as KVS
+  participant S as S3 bucket (pages + .md)
+  participant A as API Gateway REST API (x-api-key)
+  participant Q as SQS FIFO queue
+  participant W as worker Lambda (turndown)
+  participant R as viewer-response function
+  V->>B: GET /patterns/markdown-on-demand/...
+  B->>F: request + x-amzn-waf-ai-agent: the bot's name (gptbot, claudebot, ...) or none
+  alt reset a page (anyone, a page under this path)
+    V->>F: GET /patterns/markdown-on-demand/reset?page=guide.html
+    F-)A: cf.beacon POST /patterns/convert {action: reset, uri, at}
+    A-)Q: SendMessage (at: a reset is never a repeat)
+    F-->>V: 200 JSON reset queued (x-markdown: reset, no-store)
+    Q-)W: {action: reset, uri}
+    W->>K: DeleteKey md:<uri> only, the .md stays (leaves the edge in about a minute)
+  else a browser (no markdown in Accept, x-amzn-waf-ai-agent: none)
+    V->>F: GET /patterns/markdown-on-demand/guide.html
+    F->>S: GET guide.html (x-markdown: skipped, no KVS read, no beacon)
+  else an agent (Accept: text/markdown, or a bot name in x-amzn-waf-ai-agent)
+    V->>F: GET guide.html as an agent
+    F->>K: get md:/patterns/markdown-on-demand/guide.html
+    alt key found
+      K-->>F: /patterns/markdown-on-demand/guide.md
+      F->>S: GET guide.md (x-markdown: served)
+    else KeyNotFound
+      F-)A: cf.beacon POST /patterns/convert {uri, minute}
+      A-)Q: SendMessage (dedup on the body)
+      F->>S: GET guide.html (x-markdown: queued)
+      Q-)W: {uri, minute}
+      W->>S: GET guide.html, PUT guide.md (overwrites one left by a reset)
+      W->>K: PutKey md:<uri> = guide.md (reaches the edge in about a minute)
+    end
+  end
+  S-->>R: 200
+  R-->>V: response + x-markdown, Vary: Accept, User-Agent
+```
+
 ### Requirements
 
 - **Runtime** `cloudfront-js-2.0`. Network calls are not available with continuous deployment or the free pricing plan. `cf.beacon` is the one network call of the invocation.

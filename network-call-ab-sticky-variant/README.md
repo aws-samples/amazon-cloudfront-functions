@@ -10,6 +10,69 @@ Why a network call: the assignment must be global and durable (overrides, re-buc
 
 A variant is not an access decision, so the function fails open: any failure forwards the request as `control`, with `x-ab-error`, and `control` never becomes a cookie, so the next visit tries again. The new `uid` is a SHA-256 of the request id, the viewer IP and the time: a function cannot make a network call after generating random values, so `Math.random()` is not an option. The function deletes every viewer-supplied `x-ab-*` header first, so a viewer cannot make the response function set a cookie of their choosing; the response function checks both values again.
 
+### Architecture
+
+The deployable version of this example ([patterns/04-ab-global-table](https://github.com/aws-samples/sample-cloudfront-functions-network-calls-patterns/tree/main/patterns/04-ab-global-table))
+looks like this; this folder holds only the CloudFront Function code.
+
+![Architecture of the ab-sticky-variant network call example](architecture.png)
+
+```mermaid
+flowchart LR
+  viewer["Viewer"]
+  subgraph dist["Distribution"]
+    fn_resp{{"viewer-response<br/>function"}}
+    cloudfront["Amazon CloudFront<br/>/patterns/ab-global-table/*"]
+    fn_req{{"viewer-request<br/>function"}}
+  end
+  lambda_loader["Lambda Web Function<br/>#quot;ab-global-table#quot; (IamAuth + OAC)"]
+  ddb_table[("DynamoDB global table<br/>us-east-1 + eu-west-1")]
+  kvs[("KVS<br/>uid to variant")]
+  lambda_evictor["Lambda<br/>evictor"]
+  viewer -->|"GET"| cloudfront
+  cloudfront -->|"1. viewer request"| fn_req
+  kvs -->|"2. get(uid)"| fn_req
+  fn_req -->|"3. cf.fetch POST /assign/uid<br/>(KVS miss only)"| lambda_loader
+  lambda_loader -->|"assign once"| ddb_table
+  lambda_loader -->|"fill"| kvs
+  cloudfront -->|"4. forward with x-ab-*"| lambda_loader
+  cloudfront -->|"5. viewer response"| fn_resp
+  fn_resp -->|"6. Set-Cookie uid, ab"| viewer
+  ddb_table -.->|"stream: TTL, edits"| lambda_evictor
+  lambda_evictor -.->|"UpdateKeys"| kvs
+```
+
+### Sequence diagram
+
+```mermaid
+sequenceDiagram
+  autonumber
+  participant V as Viewer
+  participant F as viewer-request function
+  participant K as KVS
+  participant L as Loader Web Function (IamAuth + OAC)
+  participant D as DynamoDB global table
+  participant R as viewer-response function
+  V->>F: GET /patterns/ab-global-table/ (cookie uid, or none)
+  F->>F: drop viewer x-ab-set-*, mint a uid if missing
+  F->>K: get(uid)
+  alt KVS hit
+    K-->>F: A or B (x-ab-source: kvs, no call)
+  else miss
+    F->>L: cf.fetch POST /assign/uid
+    L->>D: conditional PutItem (or read the existing item)
+    L->>K: UpdateKeys put uid
+    L-->>F: {"variant":"A" or "B"} (x-ab-source: origin)
+  else any failure
+    F->>F: x-ab-variant: control, x-ab-source: fallback, x-ab-error
+  end
+  F->>L: forward with x-ab-variant, x-ab-set-uid, x-ab-set-variant
+  L-->>R: 200 JSON echo
+  R->>R: Set-Cookie uid (new uid), Set-Cookie ab (A or B only), x-ab-hooks
+  R-->>V: response
+  Note over D,K: TTL expiry or an edit streams to the evictor Lambda, which deletes or rewrites the KVS key
+```
+
 ### Requirements
 
 - **Runtime** `cloudfront-js-2.0`. Network calls are not available with continuous deployment or the free pricing plan.

@@ -13,6 +13,67 @@ A probe that says nothing about the primary fails open to the primary: a `TypeEr
 
 The optional response function makes no call. It maps an `x-origin` marker that the primary and the secondary set to `x-served-by` (no marker means the mirror answered), removes the marker, adds `x-fallback: true` when the primary did not answer, and copies the request function's verdict headers onto the response.
 
+### Architecture
+
+The deployable version of this example ([patterns/08-origin-health-fallback](https://github.com/aws-samples/sample-cloudfront-functions-network-calls-patterns/tree/main/patterns/08-origin-health-fallback))
+looks like this; this folder holds only the CloudFront Function code.
+
+![Architecture of the origin-health-failover network call example](architecture.png)
+
+```mermaid
+flowchart LR
+  fn_response{{"viewer-response<br/>function"}}
+  s3_mirror["S3 static mirror<br/>(OAC, GET and HEAD)"]
+  viewer["Viewer"]
+  subgraph dist["Distribution"]
+    cloudfront["Amazon CloudFront"]
+    fn{{"viewer-request<br/>function"}}
+  end
+  lambda_primary["Lambda Web Function<br/>#quot;origin-health-fallback#quot; (IamAuth + OAC)"]
+  kvs_store[("KVS<br/>health-probe")]
+  lambda_secondary["Lambda Web Function<br/>#quot;origin-health-fallback-secondary#quot;<br/>(IamAuth + OAC, POST standby)"]
+  viewer -->|"POST /infer"| cloudfront
+  cloudfront -->|"1. viewer request"| fn
+  fn -->|"2. get"| kvs_store
+  fn -->|"3. cf.fetch GET /health<br/>(probe gate on)"| lambda_primary
+  cloudfront -->|"4. healthy: forward"| lambda_primary
+  fn -->|"4. or POST fallback"| lambda_secondary
+  cloudfront -->|"4. or GET/HEAD fallback"| s3_mirror
+  fn_response -->|"5. x-served-by"| viewer
+```
+
+### Sequence diagram
+
+```mermaid
+sequenceDiagram
+  autonumber
+  participant V as Viewer
+  participant F as viewer-request function
+  participant K as KVS
+  participant P as Primary Web Function "origin-health-fallback" (IamAuth + OAC)
+  participant S as Secondary Web Function "origin-health-fallback-secondary" (POST standby)
+  participant M as S3 static mirror (GET and HEAD)
+  participant R as viewer-response function
+  V->>F: POST /patterns/origin-health-fallback/infer?probe=on
+  F->>K: get("health-probe") (?probe= overrides)
+  alt probe gate off, or the call unavailable
+    F->>F: x-health-probe: off or unavailable, x-route: primary (fail open)
+  else probe gate on
+    F->>P: cf.fetch GET /health, includeBody false (1 s runtime timeout)
+    P-->>F: status, or TimeoutError after 1 s
+  end
+  alt healthy, or failing open
+    F->>P: POST goes to the primary (GET and HEAD via an origin group with the mirror)
+    P-->>R: response
+  else non-2xx or TimeoutError
+    F->>S: POST: selectRequestOriginById(secondary), x-route: fallback
+    Note over F,M: GET and HEAD: selectRequestOriginById(mirror) instead
+    S-->>R: response
+  end
+  R->>R: x-served-by: primary, secondary or fallback, copy the verdict headers
+  R-->>V: response (viewer-response does not run on 4xx or 5xx)
+```
+
 ### Requirements
 
 - **Runtime** `cloudfront-js-2.0`. Network calls are not available with continuous deployment or the free pricing plan.

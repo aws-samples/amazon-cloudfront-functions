@@ -6,6 +6,43 @@ This is the smallest network call: the function sends one `GET /hello` to an ori
 
 The function fails open: if the call fails, the request still goes through, with the error in `x-hello-error`. It deletes viewer-supplied `x-hello-message`, `x-hello-status` and `x-hello-error` headers first, so the origin only sees values the function set.
 
+### Architecture
+
+The deployable version of this example ([patterns/00-hello-fetch](https://github.com/aws-samples/sample-cloudfront-functions-network-calls-patterns/tree/main/patterns/00-hello-fetch))
+looks like this; this folder holds only the CloudFront Function code.
+
+![Architecture of the hello-fetch network call example](architecture.png)
+
+```mermaid
+flowchart LR
+  viewer["Viewer"]
+  subgraph dist["Distribution"]
+    cloudfront["Amazon CloudFront<br/>/patterns/hello-fetch/*"]
+    fn{{"viewer-request<br/>function"}}
+  end
+  lambda_origin["Lambda Web Function<br/>#quot;hello-fetch#quot; (IamAuth + OAC)"]
+  viewer -->|"GET"| cloudfront
+  cloudfront -->|"1. viewer request"| fn
+  fn -->|"2. cf.fetch GET /hello"| lambda_origin
+  cloudfront -->|"3. forward with x-hello-*"| lambda_origin
+```
+
+### Sequence diagram
+
+```mermaid
+sequenceDiagram
+  autonumber
+  participant V as Viewer
+  participant F as CloudFront Function (viewer-request)
+  participant O as Web Function origin "hello-fetch" (IamAuth + OAC)
+  V->>F: GET /patterns/hello-fetch/
+  F->>O: cf.fetch GET /hello
+  O-->>F: {"message":"hello from the origin"}
+  F->>F: x-hello-message, x-hello-status
+  F->>O: forward the viewer request
+  O-->>V: 200 JSON echo of the x-hello-* headers it received (the function's, plus any other x-hello-* the viewer sent) and x-origin-verify present
+```
+
 ### Requirements
 
 - **Runtime** `cloudfront-js-2.0`. Network calls are not available with continuous deployment or the free pricing plan.

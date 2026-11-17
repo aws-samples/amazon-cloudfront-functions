@@ -8,6 +8,57 @@ Why a network call: the verdict comes from a service that sees more than one req
 
 The check is a signal, not an authorization decision, so it fails open: if the service is slow or down, the request goes through with `x-bot-check: unavailable`. The function deletes every viewer-supplied `x-bot-*` header first, so a viewer cannot forge a verdict or a policy. The call and the KVS read run in parallel with `Promise.allSettled`, not `Promise.all`, so a missing KVS key does not throw away the verdict.
 
+### Architecture
+
+The deployable version of this example ([patterns/03-bot-check-fail-open](https://github.com/aws-samples/sample-cloudfront-functions-network-calls-patterns/tree/main/patterns/03-bot-check-fail-open))
+looks like this; this folder holds only the CloudFront Function code.
+
+![Architecture of the bot-check-fail-open network call example](architecture.png)
+
+```mermaid
+flowchart LR
+  viewer["Viewer"]
+  subgraph dist["Distribution"]
+    cloudfront["Amazon CloudFront<br/>/patterns/bot-check-fail-open/*"]
+    fn{{"viewer-request<br/>function"}}
+  end
+  kvs[("KVS<br/>bot-policy")]
+  lambda_vendor["Lambda Web Function<br/>#quot;bot-check-fail-open#quot; (IamAuth + OAC)"]
+  viewer -->|"GET"| cloudfront
+  cloudfront -->|"1. viewer request"| fn
+  fn -->|"2. cf.fetch POST /check"| lambda_vendor
+  kvs -->|"2. bot-policy, read in parallel"| fn
+  cloudfront -->|"3. forward with x-bot-*"| lambda_vendor
+  fn -->|"3. or 403 block page"| viewer
+```
+
+### Sequence diagram
+
+```mermaid
+sequenceDiagram
+  autonumber
+  participant V as Viewer
+  participant F as CloudFront Function (viewer-request)
+  participant K as KVS
+  participant B as Mock vendor Web Function "bot-check-fail-open" (IamAuth + OAC)
+  V->>F: GET /patterns/bot-check-fail-open/echo
+  F->>F: delete viewer-supplied x-bot-* headers
+  par Promise.allSettled
+    F->>B: cf.fetch POST /check {path, ip, user-agent, accept-language}
+    B-->>F: {"verdict":"human" or "bot","score":N}
+  and
+    F->>K: get("bot-policy")
+    K-->>F: block, tag or off (default tag)
+  end
+  alt bot and policy block
+    F-->>V: 403 block page
+  else anything else
+    F->>B: forward with x-bot-check, x-bot-verdict, x-bot-score, x-bot-policy
+    B-->>V: 200 echo of the x-bot-* headers
+  end
+  Note over F: TimeoutError (over 1 s), error or non-200 means x-bot-check: unavailable, forward
+```
+
 ### Requirements
 
 - **Runtime** `cloudfront-js-2.0`. Network calls are not available with continuous deployment or the free pricing plan.
