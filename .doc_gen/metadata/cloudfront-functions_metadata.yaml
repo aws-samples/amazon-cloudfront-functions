@@ -202,3 +202,107 @@ cloudfront_functions_select_origin_based_on_country:
                 - select-origin-based-on-country/index.js
   services:
     cloudfront:
+cloudfront_functions_network_call_hello_fetch:
+  title: Make a network call to an origin from a &CF; Functions viewer request event
+  title_abbrev: Make a network call
+  synopsis: make one network call with cf.fetch to an origin on the same distribution and copy part of the answer into a request header.
+
+  category: CloudFront Functions examples
+  languages:
+    JavaScript:
+      versions:
+        - sdk_version: 102
+          github: https://github.com/aws-samples/amazon-cloudfront-functions/tree/main/network-call-hello-fetch
+          excerpts:
+            - description:
+              snippet_files:
+                - network-call-hello-fetch/index.js
+  services:
+    cloudfront:
+cloudfront_functions_network_call_authorizer_headers:
+  title: Authorize a request with a network call in a &CF; Functions viewer request event
+  title_abbrev: Authorize with a network call
+  synopsis: ask an authorizer origin with cf.fetch whether to allow a request, and forward the identity headers it returns.
+
+  category: CloudFront Functions examples
+  languages:
+    JavaScript:
+      versions:
+        - sdk_version: 102
+          github: https://github.com/aws-samples/amazon-cloudfront-functions/tree/main/network-call-authorizer-headers
+          excerpts:
+            - description:
+              snippet_files:
+                - network-call-authorizer-headers/index.js
+  services:
+    cloudfront:
+cloudfront_functions_network_call_bot_check_fail_open:
+  title: Check for bots with a network call that fails open in a &CF; Functions viewer request event
+  title_abbrev: Bot check that fails open
+  synopsis: ask a bot-check origin with cf.fetch, combine the verdict with a KeyValueStore policy, and fail open when the call fails.
+
+  category: CloudFront Functions examples
+  languages:
+    JavaScript:
+      versions:
+        - sdk_version: 102
+          github: https://github.com/aws-samples/amazon-cloudfront-functions/tree/main/network-call-bot-check-fail-open
+          excerpts:
+            - description:
+              snippet_files:
+                - network-call-bot-check-fail-open/index.js
+  services:
+    cloudfront:
+cloudfront_functions_network_call_beacon_signal:
+  title: Send fire-and-forget events with a network call from &CF; Functions
+  title_abbrev: Send events with cf.beacon
+  synopsis: send a fire-and-forget event with cf.beacon from viewer request and viewer response events.
+
+  category: CloudFront Functions examples
+  languages:
+    JavaScript:
+      versions:
+        - sdk_version: 102
+          github: https://github.com/aws-samples/amazon-cloudfront-functions/tree/main/network-call-beacon-signal
+          excerpts:
+            - description:
+              snippet_files:
+                - network-call-beacon-signal/index.js
+                - network-call-beacon-signal/response-function.js
+  services:
+    cloudfront:
+cloudfront_functions_network_call_origin_health_failover:
+  title: Fail over to a secondary origin after a health check network call in a &CF; Functions viewer request event
+  title_abbrev: Health check and failover
+  synopsis: probe the primary origin with cf.fetch and select a secondary origin when it is unhealthy.
+
+  category: CloudFront Functions examples
+  languages:
+    JavaScript:
+      versions:
+        - sdk_version: 102
+          github: https://github.com/aws-samples/amazon-cloudfront-functions/tree/main/network-call-origin-health-failover
+          excerpts:
+            - description:
+              snippet_files:
+                - network-call-origin-health-failover/index.js
+                - network-call-origin-health-failover/response-function.js
+  services:
+    cloudfront:
+cloudfront_functions_network_call_agent_authz:
+  title: Authorize each request before the cache with a network call in a &CF; Functions viewer request event
+  title_abbrev: Authorize before the cache
+  synopsis: ask an authorization origin with cf.fetch whether a request may act on a resource, before the cache serves it.
+
+  category: CloudFront Functions examples
+  languages:
+    JavaScript:
+      versions:
+        - sdk_version: 102
+          github: https://github.com/aws-samples/amazon-cloudfront-functions/tree/main/network-call-agent-authz
+          excerpts:
+            - description:
+              snippet_files:
+                - network-call-agent-authz/index.js
+  services:
+    cloudfront:
