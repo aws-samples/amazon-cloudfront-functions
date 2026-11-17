@@ -1,0 +1,21 @@
+{
+    "version": "1.0",
+    "context": {
+        "eventType": "viewer-request"
+    },
+    "viewer": {
+        "ip": "192.0.2.10"
+    },
+    "request": {
+        "method": "GET",
+        "uri": "/index.html",
+        "querystring": {},
+        "headers": {
+            "host": { "value": "www.example.com" },
+            "accept": { "value": "text/html" },
+            "x-hello-message": { "value": "forged by the viewer" },
+            "x-hello-status": { "value": "200" }
+        },
+        "cookies": {}
+    }
+}
