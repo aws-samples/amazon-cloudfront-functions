@@ -81,7 +81,7 @@ Test the function using the provided test event by running the following command
 
 ```
 aws cloudfront test-function \
---name add-cache-control-headers \ 
+--name add-cache-control-headers \
 --if-match EXXXXXXXXX \
 --event-object fileb://add-cache-control-header/test-event.json
 
