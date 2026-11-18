@@ -74,8 +74,14 @@ sequenceDiagram
   | Answer | Any `2xx`. The answer is never read |
   | Time | Within 1 second, fixed by the runtime. A slower collector does not delay the viewer; the event is lost and the failure is logged |
 
-  One way to build the collector with no code: an Amazon API Gateway REST API with an Amazon SQS service integration (API Gateway signs `SendMessage`), with `uri` (or `dedupId`) as the FIFO deduplication id. If the API stage is the first path segment, set it as the origin path, or change `SIGNAL_PATH`.
-- **Lock the origin** so that only CloudFront can call it. Any origin type works. For a Lambda Web Function, use an `IamAuth` endpoint behind origin access control (OAC) that signs with `always-amz-auth`. For an API Gateway REST API, require an API key and add it as an `x-api-key` custom origin header: it is sent on every beacon.
+  Two ways to build the collector, both fine:
+  - **Simply, with no code:** an Amazon API Gateway REST API with an Amazon SQS service integration (API Gateway signs
+    `SendMessage`), with `uri` (or `dedupId`) as the FIFO deduplication id. If the API stage is the first path segment,
+    set it as the origin path, or change `SIGNAL_PATH`. Nothing runs between the beacon and the queue.
+  - **Globally, with a Lambda Web Function:** a small HTTP server that validates or enriches the event and sends it to the
+    queue. Use it when you need logic before the queue, or one endpoint served from several Regions (a `MultiRegion`
+    endpoint, routed to the nearest Region).
+- **Lock the origin** so that only CloudFront can call it. For an API Gateway REST API, require an API key and add it as an `x-api-key` custom origin header: it is sent on every beacon. For a Lambda Web Function, use an `IamAuth` endpoint behind origin access control (OAC) that signs with `always-amz-auth` (a global `MultiRegion` endpoint signs with SigV4a).
 
 ### Deploy
 
