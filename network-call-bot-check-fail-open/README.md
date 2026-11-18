@@ -72,7 +72,7 @@ sequenceDiagram
   | Time | The whole answer within 1 second. This is fixed by the runtime and cannot be changed; past it the request is forwarded unchecked |
 
 - **KeyValueStore (optional)**: the key `bot-policy` with the value `block`, `tag` or `off`. Without a KVS, without the key, or with any other value, the policy is `tag`, and `x-bot-policy-source` says why.
-- **Lock the origin** so that only CloudFront can call it. Any origin type works. For a Lambda Web Function, use an `IamAuth` endpoint behind origin access control (OAC) that signs with `always-amz-auth`: CloudFront signs the `POST` with an unsigned payload, so the function needs no body hash. For a third-party vendor, put the vendor's API key in a custom origin header on that origin: it is sent on the call.
+- **Lock the origin** so that only CloudFront can call it. Any origin type works. For a Lambda Web Function (`*.lambda-web.<region>.on.aws`), use an `IamAuth` endpoint behind origin access control (OAC) that signs with `always-amz-auth`: CloudFront signs the `POST` with an unsigned payload, so the function needs no body hash. For a Lambda function URL origin behind OAC, the function must send an `x-amz-content-sha256` header with the SHA-256 of the body. For a third-party vendor, put the vendor's API key in a custom origin header on that origin: it is sent on the call.
 
 ### Deploy
 

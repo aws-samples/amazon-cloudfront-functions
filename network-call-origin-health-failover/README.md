@@ -92,7 +92,7 @@ sequenceDiagram
 - **KeyValueStore**: the key `health-probe` with the value `on`. Without a KVS, without the key, or with any other value, the probe is off and every request goes to the primary.
 - **The cache behavior** must allow the methods you want to fail over (`GET, HEAD, OPTIONS, PUT, POST, PATCH, DELETE`).
 - **For the response function** (optional): the primary sets `x-origin: primary` and the secondary sets `x-origin: secondary` on their answers.
-- **Lock the origins** so that only CloudFront can call them. Any origin type works. For a Lambda Web Function, use an `IamAuth` endpoint behind origin access control (OAC) that signs with `always-amz-auth`: CloudFront signs the probe and the forwarded `POST` (with an unsigned payload, so no body hash is needed). For the S3 mirror, use OAC on the bucket.
+- **Lock the origins** so that only CloudFront can call them. Any origin type works. For a Lambda Web Function (`*.lambda-web.<region>.on.aws`), use an `IamAuth` endpoint behind origin access control (OAC) that signs with `always-amz-auth`: CloudFront signs the probe and the forwarded `POST` with an unsigned payload, so neither the function nor the viewer needs a body hash. For a Lambda function URL origin behind OAC, every forwarded `POST` or `PUT` must carry an `x-amz-content-sha256` header with the SHA-256 of the body, which the viewer has to send (the `GET` probe needs none). For the S3 mirror, use OAC on the bucket.
 
 ### Deploy
 

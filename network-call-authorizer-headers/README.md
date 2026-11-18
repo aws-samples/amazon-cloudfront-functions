@@ -64,7 +64,7 @@ sequenceDiagram
   | Answer | `200` with `{"allow": true, "headers": {"x-tenant": "acme", "x-role": "admin"}}`, or `{"allow": false}`. At most 10 KB |
   | Time | The whole answer within 1 second. This is fixed by the runtime and cannot be changed |
 
-- **Lock the origin** so that only CloudFront can call it. Any origin type works. For a Lambda Web Function, use an `IamAuth` endpoint behind origin access control (OAC) that signs with `always-amz-auth`: CloudFront signs the `POST` with an unsigned payload, so the function needs no body hash. Make sure viewers cannot reach `/authorize` through a cache behavior.
+- **Lock the origin** so that only CloudFront can call it. Any origin type works. For a Lambda Web Function (`*.lambda-web.<region>.on.aws`), use an `IamAuth` endpoint behind origin access control (OAC) that signs with `always-amz-auth`: CloudFront signs the `POST` with an unsigned payload, so the function needs no body hash. For a Lambda function URL origin behind OAC, the function must send an `x-amz-content-sha256` header with the SHA-256 of the body. Make sure viewers cannot reach `/authorize` through a cache behavior.
 
 ### Deploy
 
