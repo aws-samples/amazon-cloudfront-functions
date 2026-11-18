@@ -47,6 +47,17 @@ A function on the `cloudfront-js-2.0` runtime can make one network call per invo
 |[Markdown for AI agents, made on demand](network-call-markdown-on-demand/)| Serves AI agents a markdown copy of a page from KeyValueStore; when there is none yet, serves the HTML and sends a conversion job with `cf.beacon`.|
 |[Virtual waiting room](network-call-waiting-room/)| Draws a ticket with one call per viewer, then compares a signed cookie with a watermark in KeyValueStore on every refresh. AWS WAF CAPTCHA in front; fails closed.|
 
+### Deployable samples
+
+Each example above has a deployable version, with its origins and infrastructure in AWS CDK, in its own repository. Larger
+samples built on network calls:
+
+|Sample|Description|
+|------|-------|
+|[CloudFront Functions network-call patterns](https://github.com/aws-samples/sample-cloudfront-functions-network-calls-patterns)| Every example above as a deployable pattern: CloudFront distribution, Lambda Web Function and other origins, KeyValueStore, AWS WAF, with a demo page.|
+|[Automated format conversion for AI agents](https://github.com/aws-samples/sample-automated-markdowns-for-agents-using-cloudfront-and-waf)| AWS WAF detects AI agents and CloudFront serves them a generated markdown copy of each page; a `cf.beacon` asks for the conversion.|
+|[AI maze](https://github.com/arditti/sample-cloudfront-waf-ai-agents-maze)| AWS WAF Bot Control flags unwanted AI crawlers and a CloudFront Function serves model-generated decoy pages in place; a `cf.beacon` asks for a decoy.|
+
 ## Deploying a CloudFront function using the AWS CLI
 We will use the example that adds cache control headers to responses as our function, but the same process can be used for all the functions with only minor changes.
 
