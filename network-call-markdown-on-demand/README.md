@@ -96,7 +96,12 @@ sequenceDiagram
 
 - **Runtime** `cloudfront-js-2.0`. Network calls are not available with continuous deployment or the free pricing plan. `cf.beacon` is the one network call of the invocation.
 - **The pages origin**: the cache behavior's origin serves the pages and the `.md` copies next to them, for example an Amazon S3 bucket behind origin access control (OAC).
-- **A queue API on the same distribution** with the origin id `markdown-queue` (the origin's **Name** in the console; change `QUEUE_ORIGIN_ID` at the top of `index.js` to use another). It needs no cache behavior of its own. One way to build it with no code: an Amazon API Gateway REST API with an Amazon SQS service integration that sends the body to a FIFO queue with content-based deduplication. If the API stage is the first path segment, set it as the origin path, or change `CONVERT_PATH`.
+- **A queue API on the same distribution** with the origin id `markdown-queue` (the origin's **Name** in the console; change `QUEUE_ORIGIN_ID` at the top of `index.js` to use another). It needs no cache behavior of its own. Two ways to build it, both fine:
+  - **Simply, with no code:** an Amazon API Gateway REST API with an Amazon SQS service integration that sends the body to
+    a FIFO queue with content-based deduplication. If the API stage is the first path segment, set it as the origin
+    path, or change `CONVERT_PATH`. Nothing runs between the beacon and the queue.
+  - **Globally, with a Lambda Web Function:** a small HTTP server that validates the job and sends it to the queue. Use it
+    when you need logic before the queue, or one endpoint served from several Regions (a `MultiRegion` endpoint).
 - **The origin contract**:
 
   | | |
@@ -108,7 +113,7 @@ sequenceDiagram
 - **A worker behind the queue**, for example an AWS Lambda function on the SQS queue. For each message it reads the page (from the bucket, not through the distribution, so it never triggers itself), converts it to markdown, writes the `.md` next to the page (`/docs/guide.html` to `/docs/guide.md`), and then writes the KVS key `md:<page uri>` with the `.md` object's URI as the value: `md:/docs/guide.html` = `/docs/guide.md`. It writes the key only after the object, and accepts only the URIs the function's `PAGE` pattern accepts, so a message can never name another object. A KVS write takes up to about a minute to reach the edge; until then agents get the HTML and beacon again.
 - **KeyValueStore**: associated with the request function. Without a KVS every agent request beacons and gets the HTML.
 - **AWS WAF (optional)**: a web ACL with Bot Control (in count mode, so it labels and never blocks) and two count rules on these paths that insert a request header `ai-agent`: `none` on every request, then `${awswaf:managed:aws:bot-control:bot:name:}` on requests with the label `awswaf:managed:aws:bot-control:bot:category:ai` ([dynamic label interpolation](https://aws.amazon.com/blogs/security/do-more-with-aws-waf-labels-using-dynamic-label-interpolation/)). WAF prefixes inserted headers, so the function reads `x-amzn-waf-ai-agent`. The first rule overwrites any viewer copy; the function trusts the header only because of it. Without the web ACL, use `Accept: text/markdown` alone, or a viewer can claim to be an agent (which only gets them the same public content as markdown).
-- **Lock the queue API** so that only CloudFront can call it. For an API Gateway REST API, require an API key and add it as an `x-api-key` custom origin header: it is sent on every beacon.
+- **Lock the queue API** so that only CloudFront can call it. For an API Gateway REST API, require an API key and add it as an `x-api-key` custom origin header: it is sent on every beacon. For a Lambda Web Function, use an `IamAuth` endpoint behind origin access control (OAC) that signs with `always-amz-auth` (a global `MultiRegion` endpoint signs with SigV4a).
 - **Caching**: if the behavior caches, put the agent signal in the cache key (for example a normalized `Accept` header), or a cached HTML copy is served to agents.
 - **Stale markdown**: the `.md` is made once. When a page changes, have your publish pipeline delete its `md:<uri>` key, so the next agent request queues it again.
 
