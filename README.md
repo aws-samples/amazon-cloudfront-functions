@@ -54,7 +54,7 @@ aws cloudfront create-function \
 
 {
     "Location": "https://cloudfront.amazonaws.com/2020-05-31/function/arn:aws:cloudfront::XXXXXXXXXXXX:function/add-cache-control-headers",
-    "ETag": "EXXXXXXXXXXXX,
+    "ETag": "EXXXXXXXXXXXX",
     "FunctionSummary": {
         "Name": "add-cache-control-headers",
         "Status": "UNPUBLISHED",
@@ -66,7 +66,7 @@ aws cloudfront create-function \
             "FunctionARN": "arn:aws:cloudfront::XXXXXXXXXXXX:function/add-cache-control-headers",
             "Stage": "DEVELOPMENT",
             "CreatedTime": "2021-04-09T22:35:57.256000+00:00",
-            "LastModifiedTime": "2021-04-09T22:35:57.256000+00:
+            "LastModifiedTime": "2021-04-09T22:35:57.256000+00:00"
         }
     }
 }
@@ -104,7 +104,7 @@ aws cloudfront test-function \
         "ComputeUtilization": "16",
         "FunctionExecutionLogs": [],
         "FunctionErrorMessage": "",
-        "FunctionOutput": "{\"response\":{\"headers\":{\"server\":{\"value\":\"CustomOriginServer\"},\"content-length\":{\"value\":\"9593\"},\"content-type\":{\"value\":\"text/html; charset=UTF-8\"},\"cache-control\":{\"value\":\"public, max-age=63072000;\"}},\"statusDescription\":\"OK\",\"cookies\":{\"loggedIn\":{\"attributes\":\"Secure; Path=/; Domain=example.com; Expires=Wed, 05 Jan 2024 07:28:00 GMT\",\"value\":\"true\"},\"id\":{\"attributes\":\"Expires=Wed, 05 Jan 2024 07:28:00 GMT\",\"value\":\"a3fWa\"}},\"statusCode\":200}}"
+        "FunctionOutput": "{\"response\":{\"headers\":{\"server\":{\"value\":\"CustomOriginServer\"},\"content-length\":{\"value\":\"9593\"},\"content-type\":{\"value\":\"text/html; charset=UTF-8\"},\"cache-control\":{\"value\":\"public, max-age=63072000\"}},\"statusDescription\":\"OK\",\"cookies\":{\"loggedIn\":{\"attributes\":\"Secure; Path=/; Domain=example.com; Expires=Wed, 05 Jan 2024 07:28:00 GMT\",\"value\":\"true\"},\"id\":{\"attributes\":\"Expires=Wed, 05 Jan 2024 07:28:00 GMT\",\"value\":\"a3fWa\"}},\"statusCode\":200}}"
     }
 }
 ```
