@@ -142,10 +142,10 @@ aws cloudfront publish-function \
 First, get the current configuration of the distribution where you want to add the CloudFront function.
 
 ```
-aws cloudfront get-distribution-config --id EXXXXXXXXXXXXX --output json > dist-cfg.json
+aws cloudfront get-distribution-config --id EXXXXXXXXXXXXX --output json > distribution-config.json
 ```
 
-Edit the JSON file (dist-cfn.json) to add a CloudFront function association. The following shows an example CloudFront function association, which you add to one of the distribution’s cache behaviors. Use the ARN of the function that you created in a previous step.
+Edit the JSON file (distribution-config.json) to add a CloudFront function association. The following shows an example CloudFront function association, which you add to one of the distribution’s cache behaviors. Use the ARN of the function that you created in a previous step.
 
 ```
 "FunctionAssociations": {
@@ -164,7 +164,7 @@ Also, make sure to change the `ETag` key name in the JSON file to `IfMatch`.
 When you finish editing the JSON file, run this command to add the CloudFront function association to your distribution.
 
 ```
-aws cloudfront update-distribution --id EXXXXXXXXXXXXX --cli-input-json fileb://dist-cfg.json
+aws cloudfront update-distribution --id EXXXXXXXXXXXXX --cli-input-json fileb://distribution-config.json
 ```
 
 When your distribution’s status changes from `InProgress` to `Deployed` (this takes a few minutes), your CloudFront function is deployed and live at all CloudFront edge locations worldwide.
