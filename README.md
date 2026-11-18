@@ -49,7 +49,7 @@ cd amazon-cloudfront-functions/
 ```
 aws cloudfront create-function \
 --name add-cache-control-headers \
---function-config Comment="Function to add cache-control headers",Runtime=cloudfront-js-1.0 \
+--function-config Comment="Function to add cache-control headers",Runtime=cloudfront-js-2.0 \
 --function-code fileb://add-cache-control-header/index.js
 
 {
@@ -60,7 +60,7 @@ aws cloudfront create-function \
         "Status": "UNPUBLISHED",
         "FunctionConfig": {
             "Comment": "Function to add cache-control headers",
-            "Runtime": "cloudfront-js-1.0"
+            "Runtime": "cloudfront-js-2.0"
         },
         "FunctionMetadata": {
             "FunctionARN": "arn:aws:cloudfront::XXXXXXXXXXXX:function/add-cache-control-headers",
@@ -92,7 +92,7 @@ aws cloudfront test-function \
             "Status": "UNPUBLISHED",
             "FunctionConfig": {
                 "Comment": "Function to add cache-control headers",
-                "Runtime": "cloudfront-js-1.0"
+                "Runtime": "cloudfront-js-2.0"
             },
             "FunctionMetadata": {
                 "FunctionARN": "arn:aws:cloudfront::XXXXXXXXXXXX:function/add-cache-control-headers",
@@ -125,7 +125,7 @@ aws cloudfront publish-function \
         "Status": "UNASSOCIATED",
         "FunctionConfig": {
             "Comment": "Function to add cache-control headers",
-            "Runtime": "cloudfront-js-1.0"
+            "Runtime": "cloudfront-js-2.0"
         },
         "FunctionMetadata": {
             "FunctionARN": "arn:aws:cloudfront::XXXXXXXXXXXX:function/add-cache-control-headers",
