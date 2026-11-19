@@ -27,6 +27,7 @@ CloudFront functions are ideal for lightweight computation tasks on web requests
 |[Verify JSON Web Tokens](kvs-jwt-verify/)| This function performs a lightweight security token validation using JSON Web Tokens. You can use this type of tokenization to give a user of your site a URL that is time-bound. Once the predetermined expiration time has occurred, the user can no longer access the content at that URL.|
 |[Add CORS headers if missing](add-cors-header/)| This function adds an `Access-Control-Allow-Origin` response header if it is not present on the outgoing response from CloudFront.|
 |[Add a `Cache-Control` header](add-cache-control-header/)| This function adds a `Cache-Control` response header to the outgoing response from CloudFront for browser caching.|
+|[URL redirect to enforce a domain name](enforce-domain-redirect/)| This function will redirect any request for a domain name other than the enforced domain to the enforced domain. The most common use is redirecting the apex or naked domain to the `www` subdomain.|
 
 ## Network calls
 
