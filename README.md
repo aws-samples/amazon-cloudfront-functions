@@ -54,7 +54,7 @@ samples built on network calls:
 
 |Sample|Description|
 |------|-------|
-|[CloudFront Functions network-call patterns](https://github.com/aws-samples/sample-cloudfront-functions-network-calls-patterns)| Every example above as a deployable pattern: CloudFront distribution, Lambda Web Function and other origins, KeyValueStore, AWS WAF, with a demo page.|
+|[CloudFront Functions network-call patterns](https://github.com/aws-samples/sample-cloudfront-functions-network-calls-patterns)| Every example above as a deployable pattern: CloudFront distribution, Lambda Web Function and other origins, KeyValueStore, AWS WAF.|
 |[Automated format conversion for AI agents](https://github.com/aws-samples/sample-automated-markdowns-for-agents-using-cloudfront-and-waf)| AWS WAF detects AI agents and CloudFront serves them a generated markdown copy of each page; a `cf.beacon` asks for the conversion.|
 |[AI maze](https://github.com/arditti/sample-cloudfront-waf-ai-agents-maze)| AWS WAF Bot Control flags unwanted AI crawlers and a CloudFront Function serves model-generated decoy pages in place; a `cf.beacon` asks for a decoy.|
 

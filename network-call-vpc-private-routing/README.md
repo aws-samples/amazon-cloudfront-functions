@@ -12,7 +12,7 @@ A [CloudFront KeyValueStore](https://docs.aws.amazon.com/AmazonCloudFront/latest
 
 The deployable version of this example ([patterns/06-vpc-private-routing](https://github.com/aws-samples/sample-cloudfront-functions-network-calls-patterns/tree/main/patterns/06-vpc-private-routing))
 looks like this; this folder holds only the CloudFront Function code.
-In this example the tenant comes only from the `x-tenant` request header; the deployable version also accepts `?tenant=` for its demo page.
+In this example the tenant comes only from the `x-tenant` request header; the deployable version also accepts `?tenant=`, which wins over the header.
 
 ![Architecture of the vpc-private-routing network call example](architecture.png)
 
